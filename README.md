@@ -10,7 +10,7 @@ This is a **research preview**, not a general agent platform, not a developer pr
 
 ![ClawBound Runtime Architecture](docs/assets/clawbound-runtime-architecture.svg)
 
-The diagram above shows the full runtime pipeline. Every run passes through nine stages, from task input to shadow snapshot. Each stage produces an inspectable artifact. Retrieval gating can produce a no-load outcome (no retrieval context sent to the model). Tool profiles are bounded per execution mode. The event trace spans all stages and is persisted alongside the shadow snapshot.
+The ClawBound governance layer sits on top of the OpenClaw host runtime. A task flows top-to-bottom through route planning, retrieval gating, context budgeting, then forks into retrieval execution and tool profiling before converging at prompt assembly. Oracle parity, shadow snapshots, and event traces are produced at the end of every run.
 
 ## What ClawBound does
 
