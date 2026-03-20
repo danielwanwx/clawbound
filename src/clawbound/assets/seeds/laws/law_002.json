@@ -1,0 +1,14 @@
+{
+  "id": "law_002",
+  "type": "law",
+  "scope": "global",
+  "applicability": "review mode",
+  "content": "In review mode, prioritize scope drift, API compatibility, and regression risk.",
+  "confidence": 0.9,
+  "priority": 0.9,
+  "token_estimate": 20,
+  "source_ref": "seed:law_002",
+  "last_validated_at": "2026-03-14T00:00:00Z",
+  "tags": ["review", "regression"],
+  "enabled": true
+}

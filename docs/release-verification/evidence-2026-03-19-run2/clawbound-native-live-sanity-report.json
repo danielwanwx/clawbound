@@ -1,0 +1,689 @@
+{
+  "createdAt": "2026-03-19T20:28:16.238Z",
+  "provider": "openai-codex",
+  "model": "gpt-5.1",
+  "modelBinding": {
+    "intended": {
+      "provider": "openai-codex",
+      "model": "gpt-5.1"
+    },
+    "actual": {
+      "provider": "openai-codex",
+      "model": "gpt-5.1"
+    },
+    "diverged": false,
+    "divergenceStage": "none"
+  },
+  "runs": [
+    {
+      "label": "answer-host",
+      "task": "Explain what parseCsvLine in parser.js does. Read the file first.",
+      "attemptCount": 2,
+      "failureClassification": null,
+      "validationOutcome": "valid_product_result",
+      "productValid": true,
+      "externallyBlocked": false,
+      "retryable": false,
+      "failureReason": null,
+      "hostPathUsed": "embedded-runner / default-host-path",
+      "stewardContextEngineModeActive": false,
+      "routePlan": null,
+      "retrievalPlan": null,
+      "noLoad": null,
+      "promptInflationSignals": {
+        "systemPromptChars": 23925,
+        "projectContextChars": 3274,
+        "injectedWorkspaceFilesCount": 7,
+        "injectedWorkspaceChars": 2950,
+        "skillsPromptChars": 12354,
+        "observedContainsStewardKernel": false,
+        "observedContainsAgentsMd": true,
+        "observedContainsProjectContext": true,
+        "observedContainsRetrievedSnippets": false,
+        "modelBoundaryCallCount": 3
+      },
+      "promptPackageSummary": null,
+      "finalToolProfile": {
+        "profile": "host-default",
+        "allowedTools": [
+          "read",
+          "edit",
+          "write",
+          "exec",
+          "process",
+          "browser",
+          "canvas",
+          "nodes",
+          "cron",
+          "message",
+          "tts",
+          "gateway",
+          "agents_list",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get"
+        ],
+        "deniedTools": [],
+        "notes": [
+          "Default host path; no Steward-native bounded profile applied."
+        ]
+      },
+      "actualToolNamesSeenByModel": [
+        "read",
+        "edit",
+        "write",
+        "exec",
+        "process",
+        "browser",
+        "canvas",
+        "nodes",
+        "cron",
+        "message",
+        "tts",
+        "gateway",
+        "agents_list",
+        "sessions_list",
+        "sessions_history",
+        "sessions_send",
+        "sessions_spawn",
+        "session_status",
+        "web_search",
+        "web_fetch",
+        "image",
+        "memory_search",
+        "memory_get"
+      ],
+      "actualToolCallNames": [
+        "read"
+      ],
+      "runOutput": "`parseCsvLine` is a very simple helper that turns a single CSV line (a string) into an array of values by splitting on commas.\n\nFrom `parser.js`:\n\n```js\nexport function parseCsvLine(input) {\n  return input.split(\",\");\n}\n```\n\nExplanation:\n\n- It takes one argument, `input`, which is expected to be a string representing one line of CSV, e.g.:\n  ```js\n  \"a,b,c\"\n  ```\n- It calls `input.split(\",\")`, which:\n  - Looks for every comma `,` in the string\n  - Cuts the string at those commas\n  - Returns an array of the resulting substrings\n\nExample behavior:\n\n```js\nparseCsvLine(\"a,b,c\");           // [\"a\", \"b\", \"c\"]\nparseCsvLine(\"1,2,3\");           // [\"1\", \"2\", \"3\"]\nparseCsvLine(\"a,,c\");            // [\"a\", \"\", \"c\"] (empty field in the middle)\n```\n\nLimitations (by design of this function):\n\n- It does not handle quoted CSV fields (e.g. `\"a,b\"` as a single field).\n- It does not trim whitespace around values.\n- It does not handle escaped quotes or commas inside quotes.\n\nSo in short: it’s a bare-bones CSV line splitter that treats every comma as a separator and returns the resulting pieces in an array.",
+      "runOutcome": {
+        "completed": true,
+        "aborted": false,
+        "stopReason": "completed"
+      },
+      "focusedTest": null,
+      "persistedArtifactsLocation": {
+        "contextEngineRun": null,
+        "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/answer-host-omIF8H/session.jsonl",
+        "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/answer-host-omIF8H/workspace"
+      }
+    },
+    {
+      "label": "answer-native",
+      "task": "Explain what parseCsvLine in parser.js does. Read the file first.",
+      "attemptCount": 1,
+      "failureClassification": null,
+      "validationOutcome": "valid_product_result",
+      "productValid": true,
+      "externallyBlocked": false,
+      "retryable": false,
+      "failureReason": null,
+      "hostPathUsed": "embedded-runner / steward-bounded-context-engine",
+      "stewardContextEngineModeActive": true,
+      "routePlan": {
+        "taskType": "answer",
+        "complexity": "trivial",
+        "risk": "medium",
+        "domainSpecificity": "repo_specific",
+        "executionMode": "answer",
+        "contextBudget": {
+          "alwaysOnMaxTokens": 180,
+          "retrievalMaxUnits": 0,
+          "retrievalMaxTokens": 0
+        },
+        "decisionTrace": {
+          "traceId": "steward-trace-47d31eb5-ff13-4fba-9605-497d81eacdab",
+          "summary": "task_type=answer;complexity=trivial;domain=repo_specific;risk=medium;mode=answer",
+          "steps": [
+            {
+              "code": "TASK_TYPE",
+              "evidence": "Explain what parseCsvLine in parser.js does. Read the file first.",
+              "effect": {
+                "taskType": "answer"
+              },
+              "reason": "Task type inferred from explicit request keywords."
+            },
+            {
+              "code": "COMPLEXITY",
+              "evidence": "Explain what parseCsvLine in parser.js does. Read the file first.",
+              "effect": {
+                "complexity": "trivial"
+              },
+              "reason": "Complexity is inferred from task shape and ambiguity markers."
+            },
+            {
+              "code": "DOMAIN_SPECIFICITY",
+              "evidence": "continuation_of=null, local_context=0",
+              "effect": {
+                "domainSpecificity": "repo_specific"
+              },
+              "reason": "Domain specificity reflects continuation state and repo-local signals."
+            },
+            {
+              "code": "RISK",
+              "evidence": "Explain what parseCsvLine in parser.js does. Read the file first.",
+              "effect": {
+                "risk": "medium"
+              },
+              "reason": "Risk rises for compatibility-sensitive and externally sensitive work."
+            },
+            {
+              "code": "EXECUTION_MODE",
+              "evidence": "risk=medium, complexity=trivial, domain=repo_specific",
+              "effect": {
+                "executionMode": "answer"
+              },
+              "reason": "Execution mode follows the deterministic MVP routing matrix."
+            },
+            {
+              "code": "CONTEXT_BUDGET",
+              "evidence": "always_on=180, retrieval_units=0, retrieval_tokens=0",
+              "effect": {
+                "contextBudget": {
+                  "alwaysOnMaxTokens": 180,
+                  "retrievalMaxUnits": 0,
+                  "retrievalMaxTokens": 0
+                }
+              },
+              "reason": "Context budget is determined by execution mode and sparse-context limits."
+            }
+          ]
+        }
+      },
+      "retrievalPlan": {
+        "loadLaws": false,
+        "loadProjectNotes": false,
+        "loadEpisodeSummary": false,
+        "lawQueries": [],
+        "projectQueries": [],
+        "episodeQueries": [],
+        "maxUnits": 0,
+        "maxTokens": 0,
+        "noLoad": true,
+        "gateTrace": {
+          "traceId": "steward-trace-47d31eb5-ff13-4fba-9605-497d81eacdab",
+          "summary": "NO_LOAD",
+          "steps": [
+            {
+              "code": "NO_LOAD",
+              "evidence": "No deterministic gate opened for this task.",
+              "effect": {
+                "noLoad": true
+              },
+              "reason": "Sparse context is the default outcome."
+            }
+          ]
+        }
+      },
+      "noLoad": true,
+      "promptInflationSignals": {
+        "systemPromptChars": 3521,
+        "projectContextChars": 0,
+        "injectedWorkspaceFilesCount": 0,
+        "injectedWorkspaceChars": 0,
+        "skillsPromptChars": 0,
+        "observedContainsStewardKernel": true,
+        "observedContainsAgentsMd": false,
+        "observedContainsProjectContext": false,
+        "observedContainsRetrievedSnippets": true,
+        "modelBoundaryCallCount": 2
+      },
+      "promptPackageSummary": {
+        "kernelVersion": "context-kernel-v0",
+        "assemblyOrder": [
+          "kernel",
+          "mode_instruction",
+          "task_brief",
+          "local_context",
+          "retrieved_units",
+          "tool_contract"
+        ],
+        "retrievedUnitIds": [],
+        "localContextCount": 0,
+        "totalEstimatedTokens": 92,
+        "noLoad": true
+      },
+      "finalToolProfile": {
+        "profile": "answer-minimal",
+        "allowedTools": [
+          "read_file"
+        ],
+        "deniedTools": [
+          "edit_file",
+          "write_file",
+          "delete_file",
+          "run_command",
+          "message"
+        ],
+        "notes": [
+          "Answer mode should stay lightweight and avoid host messaging actions."
+        ],
+        "candidateToolsObserved": [
+          "read_file",
+          "edit_file",
+          "write_file",
+          "run_command",
+          "process",
+          "browser",
+          "canvas",
+          "nodes",
+          "cron",
+          "message",
+          "tts",
+          "gateway",
+          "agents_list",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get"
+        ],
+        "requiresReview": false
+      },
+      "actualToolNamesSeenByModel": [
+        "read"
+      ],
+      "actualToolCallNames": [
+        "read"
+      ],
+      "runOutput": "`parseCsvLine` is a very simple CSV line parser:\n\n```js\nexport function parseCsvLine(input) {\n  return input.split(\",\");\n}\n```\n\nExplanation:\n\n- It takes a single string argument `input`, which is expected to be one line of CSV text.\n- It splits that string on every comma character `,` using `String.prototype.split`.\n- It returns an array of strings: each element is the text between commas.\n\nExample:\n\n```js\nparseCsvLine(\"a,b,c\");\n// => [\"a\", \"b\", \"c\"]\n```\n\nNote that this implementation does **not** handle CSV edge cases like:\n- quoted fields containing commas (e.g., `\"last, first\"`)\n- escaped quotes\n- leading/trailing whitespace\n\nIt’s purely a straightforward comma-based split.",
+      "runOutcome": {
+        "completed": true,
+        "aborted": false,
+        "stopReason": "completed"
+      },
+      "focusedTest": null,
+      "persistedArtifactsLocation": {
+        "contextEngineRun": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/answer-native-kJfXDD/workspace/.steward/context-engine/runs/live-answer-native.json",
+        "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/answer-native-kJfXDD/session.jsonl",
+        "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/answer-native-kJfXDD/workspace"
+      }
+    },
+    {
+      "label": "codefix-host",
+      "task": "Fix the failing parser test without changing public API. The relevant files are parser.js and parser.test.js. Run the focused parser test before finalizing.",
+      "attemptCount": 1,
+      "failureClassification": null,
+      "validationOutcome": "valid_product_result",
+      "productValid": true,
+      "externallyBlocked": false,
+      "retryable": false,
+      "failureReason": null,
+      "hostPathUsed": "embedded-runner / default-host-path",
+      "stewardContextEngineModeActive": false,
+      "routePlan": null,
+      "retrievalPlan": null,
+      "noLoad": null,
+      "promptInflationSignals": {
+        "systemPromptChars": 23927,
+        "projectContextChars": 3274,
+        "injectedWorkspaceFilesCount": 7,
+        "injectedWorkspaceChars": 2950,
+        "skillsPromptChars": 12354,
+        "observedContainsStewardKernel": false,
+        "observedContainsAgentsMd": true,
+        "observedContainsProjectContext": true,
+        "observedContainsRetrievedSnippets": false,
+        "modelBoundaryCallCount": 6
+      },
+      "promptPackageSummary": null,
+      "finalToolProfile": {
+        "profile": "host-default",
+        "allowedTools": [
+          "read",
+          "edit",
+          "write",
+          "exec",
+          "process",
+          "browser",
+          "canvas",
+          "nodes",
+          "cron",
+          "message",
+          "tts",
+          "gateway",
+          "agents_list",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get"
+        ],
+        "deniedTools": [],
+        "notes": [
+          "Default host path; no Steward-native bounded profile applied."
+        ]
+      },
+      "actualToolNamesSeenByModel": [
+        "read",
+        "edit",
+        "write",
+        "exec",
+        "process",
+        "browser",
+        "canvas",
+        "nodes",
+        "cron",
+        "message",
+        "tts",
+        "gateway",
+        "agents_list",
+        "sessions_list",
+        "sessions_history",
+        "sessions_send",
+        "sessions_spawn",
+        "session_status",
+        "web_search",
+        "web_fetch",
+        "image",
+        "memory_search",
+        "memory_get"
+      ],
+      "actualToolCallNames": [
+        "read",
+        "exec",
+        "edit"
+      ],
+      "runOutput": "I’ve updated `parseCsvLine` to trim whitespace while preserving its existing signature and export:\n\n```js\n// parser.js\nexport function parseCsvLine(input) {\n  return input.split(\",\").map(part => part.trim());\n}\n```\n\nFocused test run:\n\n```bash\nnode parser.test.js\n```\n\nAll tests pass:\n\n- 1 test\n- 0 failures",
+      "runOutcome": {
+        "completed": true,
+        "aborted": false,
+        "stopReason": "completed"
+      },
+      "focusedTest": {
+        "exitCode": 0,
+        "stdout": "✔ parseCsvLine trims whitespace without changing public API (1.026459ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 61.268958",
+        "stderr": ""
+      },
+      "persistedArtifactsLocation": {
+        "contextEngineRun": null,
+        "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/codefix-host-BtynR4/session.jsonl",
+        "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/codefix-host-BtynR4/workspace"
+      }
+    },
+    {
+      "label": "codefix-native",
+      "task": "Fix the failing parser test without changing public API. The relevant files are parser.js and parser.test.js. Run the focused parser test before finalizing.",
+      "attemptCount": 1,
+      "failureClassification": null,
+      "validationOutcome": "valid_product_result",
+      "productValid": true,
+      "externallyBlocked": false,
+      "retryable": false,
+      "failureReason": null,
+      "hostPathUsed": "embedded-runner / steward-bounded-context-engine",
+      "stewardContextEngineModeActive": true,
+      "routePlan": {
+        "taskType": "code_change",
+        "complexity": "bounded",
+        "risk": "high",
+        "domainSpecificity": "repo_specific",
+        "executionMode": "executor_then_reviewer",
+        "contextBudget": {
+          "alwaysOnMaxTokens": 220,
+          "retrievalMaxUnits": 3,
+          "retrievalMaxTokens": 180
+        },
+        "decisionTrace": {
+          "traceId": "steward-trace-9f7333b5-d962-4700-9735-41c716d98795",
+          "summary": "task_type=code_change;complexity=bounded;domain=repo_specific;risk=high;mode=executor_then_reviewer",
+          "steps": [
+            {
+              "code": "TASK_TYPE",
+              "evidence": "Fix the failing parser test without changing public API. The relevant files are parser.js and parser.test.js. Run the focused parser test before finalizing.",
+              "effect": {
+                "taskType": "code_change"
+              },
+              "reason": "Task type inferred from explicit request keywords."
+            },
+            {
+              "code": "COMPLEXITY",
+              "evidence": "Fix the failing parser test without changing public API. The relevant files are parser.js and parser.test.js. Run the focused parser test before finalizing.",
+              "effect": {
+                "complexity": "bounded"
+              },
+              "reason": "Complexity is inferred from task shape and ambiguity markers."
+            },
+            {
+              "code": "DOMAIN_SPECIFICITY",
+              "evidence": "continuation_of=null, local_context=0",
+              "effect": {
+                "domainSpecificity": "repo_specific"
+              },
+              "reason": "Domain specificity reflects continuation state and repo-local signals."
+            },
+            {
+              "code": "RISK",
+              "evidence": "Fix the failing parser test without changing public API. The relevant files are parser.js and parser.test.js. Run the focused parser test before finalizing.",
+              "effect": {
+                "risk": "high"
+              },
+              "reason": "Risk rises for compatibility-sensitive and externally sensitive work."
+            },
+            {
+              "code": "EXECUTION_MODE",
+              "evidence": "risk=high, complexity=bounded, domain=repo_specific",
+              "effect": {
+                "executionMode": "executor_then_reviewer"
+              },
+              "reason": "Execution mode follows the deterministic MVP routing matrix."
+            },
+            {
+              "code": "CONTEXT_BUDGET",
+              "evidence": "always_on=220, retrieval_units=3, retrieval_tokens=180",
+              "effect": {
+                "contextBudget": {
+                  "alwaysOnMaxTokens": 220,
+                  "retrievalMaxUnits": 3,
+                  "retrievalMaxTokens": 180
+                }
+              },
+              "reason": "Context budget is determined by execution mode and sparse-context limits."
+            }
+          ]
+        }
+      },
+      "retrievalPlan": {
+        "loadLaws": true,
+        "loadProjectNotes": true,
+        "loadEpisodeSummary": false,
+        "lawQueries": [
+          "fix",
+          "the",
+          "failing",
+          "parser",
+          "test",
+          "without",
+          "changing",
+          "public",
+          "api",
+          "relevant",
+          "files",
+          "are",
+          "js",
+          "and",
+          "run",
+          "focused",
+          "before",
+          "finalizing"
+        ],
+        "projectQueries": [
+          "fix",
+          "the",
+          "failing",
+          "parser",
+          "test",
+          "without",
+          "changing",
+          "public",
+          "api",
+          "relevant",
+          "files",
+          "are",
+          "js",
+          "and",
+          "run",
+          "focused",
+          "before",
+          "finalizing"
+        ],
+        "episodeQueries": [],
+        "maxUnits": 3,
+        "maxTokens": 180,
+        "noLoad": false,
+        "gateTrace": {
+          "traceId": "steward-trace-9f7333b5-d962-4700-9735-41c716d98795",
+          "summary": "LAW_GATE; PROJECT_NOTE_GATE",
+          "steps": [
+            {
+              "code": "LAW_GATE",
+              "evidence": "Task risk, review mode, or explicit compatibility constraint triggered law retrieval.",
+              "effect": {
+                "loadLaws": true
+              },
+              "reason": "Laws help enforce bounded behavior and review priorities."
+            },
+            {
+              "code": "PROJECT_NOTE_GATE",
+              "evidence": "Repo-specific task or local context is present.",
+              "effect": {
+                "loadProjectNotes": true
+              },
+              "reason": "Project notes may capture sensitive local conventions."
+            }
+          ]
+        }
+      },
+      "noLoad": false,
+      "promptInflationSignals": {
+        "systemPromptChars": 4231,
+        "projectContextChars": 0,
+        "injectedWorkspaceFilesCount": 0,
+        "injectedWorkspaceChars": 0,
+        "skillsPromptChars": 0,
+        "observedContainsStewardKernel": true,
+        "observedContainsAgentsMd": false,
+        "observedContainsProjectContext": false,
+        "observedContainsRetrievedSnippets": true,
+        "modelBoundaryCallCount": 5
+      },
+      "promptPackageSummary": {
+        "kernelVersion": "context-kernel-v0",
+        "assemblyOrder": [
+          "kernel",
+          "mode_instruction",
+          "task_brief",
+          "local_context",
+          "retrieved_units",
+          "tool_contract"
+        ],
+        "retrievedUnitIds": [
+          "pn_001",
+          "pn_002",
+          "law_002"
+        ],
+        "localContextCount": 0,
+        "totalEstimatedTokens": 197,
+        "noLoad": false
+      },
+      "finalToolProfile": {
+        "profile": "executor-bounded",
+        "allowedTools": [
+          "read_file",
+          "edit_file",
+          "run_tests",
+          "run_command"
+        ],
+        "deniedTools": [
+          "delete_file"
+        ],
+        "notes": [
+          "Mutating tools may still require host enforcement and review.",
+          "For named test files (parser.test.js), use the narrowest verification command available. Prefer an existing focused script or direct runner such as node --test <file>, and avoid npm test -- <file> unless a test script is known to exist."
+        ],
+        "candidateToolsObserved": [
+          "read_file",
+          "edit_file",
+          "write_file",
+          "run_command",
+          "process",
+          "browser",
+          "canvas",
+          "nodes",
+          "cron",
+          "message",
+          "tts",
+          "gateway",
+          "agents_list",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get"
+        ],
+        "requiresReview": true
+      },
+      "actualToolNamesSeenByModel": [
+        "read",
+        "edit",
+        "exec"
+      ],
+      "actualToolCallNames": [
+        "read",
+        "exec",
+        "edit"
+      ],
+      "runOutput": "The failing parser test is now fixed without changing the public API.\n\nChanges made in `parser.js`:\n\n```js\nexport function parseCsvLine(input) {\n  return input.split(\",\").map((part) => part.trim());\n}\n```\n\n- Public API preserved: function name, parameters, and return type are unchanged.\n- Behavior updated to trim whitespace around each CSV field.\n\nFocused test run:\n\n```bash\nnode --test parser.test.js\n```\n\nResult: all tests in `parser.test.js` pass.",
+      "runOutcome": {
+        "completed": true,
+        "aborted": false,
+        "stopReason": "completed"
+      },
+      "focusedTest": {
+        "exitCode": 0,
+        "stdout": "✔ parseCsvLine trims whitespace without changing public API (1.008458ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 61.385834",
+        "stderr": ""
+      },
+      "persistedArtifactsLocation": {
+        "contextEngineRun": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/codefix-native-xEIH06/workspace/.steward/context-engine/runs/live-codefix-native.json",
+        "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/codefix-native-xEIH06/session.jsonl",
+        "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-live-0iQ7A5/codefix-native-xEIH06/workspace"
+      }
+    }
+  ],
+  "skippedLabels": [],
+  "summary": {
+    "totalRuns": 4,
+    "validProductResults": 4,
+    "externallyBlockedRuns": 0,
+    "providerConnections": 0,
+    "providerTimeouts": 0,
+    "authFailures": 0,
+    "harnessFailures": 0,
+    "runtimeFailures": 0
+  },
+  "workflowFailure": null
+}

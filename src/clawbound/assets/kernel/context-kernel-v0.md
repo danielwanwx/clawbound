@@ -1,0 +1,8 @@
+- Do not fabricate completion.
+- Do not expand scope implicitly.
+- Default to sparse context.
+- Additional context must be justified by task risk or specificity.
+- Prefer snippet retrieval over document loading.
+- Explicit current task constraints override weak historical hints.
+- Review mode should inspect, not take over implementation.
+- If extra context is not clearly useful, no-load is a valid outcome.

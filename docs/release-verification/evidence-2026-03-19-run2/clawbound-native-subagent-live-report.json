@@ -1,0 +1,402 @@
+{
+  "createdAt": "2026-03-19T20:29:59.147Z",
+  "provider": "openai-codex",
+  "model": "gpt-5.1",
+  "modelBinding": {
+    "intended": {
+      "provider": "openai-codex",
+      "model": "gpt-5.1"
+    },
+    "actual": {
+      "provider": "openai-codex",
+      "model": "gpt-5.1"
+    },
+    "diverged": false,
+    "divergenceStage": "none"
+  },
+  "runs": [
+    {
+      "label": "subagent-host",
+      "task": "Use the sessions_spawn tool exactly once to delegate a narrow review of parseCsvLine quoted-field handling and regression risk. Do not edit files yourself. The child should only inspect parser.js and parser.test.js and report the single highest-risk regression. After spawning, report the delegated scope and child session key only.",
+      "attemptCount": 1,
+      "failureClassification": null,
+      "validationOutcome": "valid_product_result",
+      "productValid": true,
+      "externallyBlocked": false,
+      "retryable": false,
+      "failureReason": null,
+      "hostPathUsed": "embedded-runner / default-host-path + gateway child",
+      "stewardContextEngineModeActive": false,
+      "parentRoutePlan": null,
+      "parentRetrievalPlan": null,
+      "noLoad": null,
+      "subagentDelegationOccurred": true,
+      "handoff": {
+        "childSessionKey": "agent:main:subagent:89e41f51-f9e1-4115-8a1e-9abb9a2e6df8",
+        "childRunId": "28b01925-d698-42b7-8bf2-bfa56b4d7678",
+        "handoffArtifactPath": null,
+        "inheritsFullTranscriptPrevented": null,
+        "localContextRefs": [],
+        "retrievedUnitIds": []
+      },
+      "promptInflation": {
+        "parent": {
+          "systemPromptChars": 34038,
+          "projectContextChars": 13365,
+          "injectedWorkspaceFilesCount": 7,
+          "injectedWorkspaceChars": 13041,
+          "skillsPromptChars": 12354,
+          "containsStewardKernel": false,
+          "containsAgentsMd": true,
+          "containsProjectContext": true
+        },
+        "child": {
+          "systemPromptChars": 14269,
+          "projectContextChars": 0,
+          "injectedWorkspaceFilesCount": 0,
+          "injectedWorkspaceChars": 0,
+          "skillsPromptChars": 0,
+          "toolCount": 0
+        }
+      },
+      "modelBoundaryTools": {
+        "parent": [
+          "read",
+          "edit",
+          "write",
+          "exec",
+          "process",
+          "browser",
+          "canvas",
+          "nodes",
+          "cron",
+          "message",
+          "tts",
+          "gateway",
+          "agents_list",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get"
+        ],
+        "child": [
+          "read",
+          "edit",
+          "write",
+          "exec",
+          "process",
+          "browser",
+          "canvas",
+          "nodes",
+          "message",
+          "tts",
+          "web_search",
+          "web_fetch",
+          "image"
+        ]
+      },
+      "actualToolCalls": {
+        "parent": [
+          "sessions_spawn"
+        ],
+        "child": [
+          "read"
+        ]
+      },
+      "outputQuality": {
+        "parent": "Delegated scope (child agent):\n\n- Inspect only parser.js and parser.test.js in the current workspace\n- Focus exclusively on parseCsvLine quoted-field handling, including:\n  - Embedded delimiters inside quotes\n  - Escaped/doubled quotes\n  - Newlines within quoted fields\n  - Edge cases at line boundaries (start/end of line, trailing commas, etc.)\n- Evaluate existing tests in parser.test.js for these behaviors\n- Identify and report only the single highest-risk potential regression, with:\n  1) Scenario\n  2) Current behavior\n  3) Expected/spec behavior\n  4) Why it’s the highest-risk regression vs other issues\n\nChild session key:\n\n- agent:main:subagent:89e41f51-f9e1-4115-8a1e-9abb9a2e6df8",
+        "child": "Here’s the requested focused report on the single highest‑risk potential regression related to `parseCsvLine` and quoted fields.\n\n---\n\n## Highest‑Risk Potential Regression: Quoted Fields With Embedded Delimiters\n\n### 1) Scenario\n\nA CSV line that uses standard RFC 4180–style quoted fields containing embedded delimiters, e.g.:\n\n```text\n'alpha,\"b,eta\",gamma'\n```\n\nor with spaces:\n\n```text\n'alpha, \"b,eta\" ,gamma'\n```\n\nThis is a very common real‑world pattern: a comma inside a value that is safely enclosed in double quotes.\n\n### 2) Current Behavior (as Implemented)\n\n`parseCsvLine` is currently:\n\n```js\nexport function parseCsvLine(input) {\n  return input.split(\",\");\n}\n```\n\nBehavior on the line:\n\n```js\nparseCsvLine('alpha,\"b,eta\",gamma');\n// => [\"alpha\", \"\\\"b\", \"eta\\\"\", \"gamma\"]\n```\n\nKey points:\n\n- The comma inside the quoted field `\"b,eta\"` is treated as a real delimiter.\n- The field is **incorrectly split into two tokens**: `\"\\\"b\"` and `\"eta\\\"\"`.\n- There is no stripping of quotes or trimming beyond whatever the caller might do later.\n- There is no state machine or awareness of quotes, escapes, or newlines.\n\n### 3) Expected / Spec‑Compliant Behavior\n\nFor standard CSV (e.g., RFC 4180 semantics):\n\n- Commas inside double‑quoted fields must **not** be treated as delimiters.\n- The quotes should delimit the field; the comma inside is literal content.\n- The expected parse result is:\n\n```js\nparseCsvLine('alpha,\"b,eta\",gamma');\n// Expected: [\"alpha\", \"b,eta\", \"gamma\"]\n```\n\nFor variants that also trim surrounding whitespace but respect quoted content, a line like:\n\n```text\n'alpha, \"b,eta\" , gamma '\n```\n\nshould typically become:\n\n```js\n[\"alpha\", \"b,eta\", \"gamma\"]\n```\n\ni.e., outer whitespace trimmed, inner content preserved, quotes removed.\n\n### 4) Why This Is the Highest‑Risk Regression\n\nAmong all quoted‑field behaviors (embedded delimiters, escaped quotes, newlines, edge boundaries), this scenario—**quoted fields containing commas**—is the single highest‑risk for regression for these reasons:\n\n1. **Fundamental mismatch between interface and real CSV needs**  \n   - The current implementation is a naive `split(\",\")` with no quote logic at all.  \n   - Any upcoming change to “support quoted CSV” will **necessarily replace or heavily modify** this logic, introducing a new state‑ful parser or regex‑based approach.\n   - That shift is large enough that regressions are likely, especially around exactly this core behavior (what counts as a delimiter vs. content).\n\n2. **High real‑world frequency and impact**  \n   - Commas inside quoted fields are extremely common (addresses, descriptions, titles, etc.).  \n   - If this behavior is broken (as it is now), consumers will see:\n     - Wrong column counts\n     - Misaligned data (values shifting columns)\n     - Downstream parsing or validation failures  \n   - When the parser logic is changed to “fix” this, even a subtle bug (e.g., mishandling whitespace or mixed quoting) can silently corrupt data rather than fail loudly.\n\n3. **Test coverage is effectively absent for quoted behavior**  \n   - `parser.test.js` currently contains only:\n\n     ```js\n     test(\"parseCsvLine trims whitespace without changing public API\", () => {\n       assert.deepEqual(parseCsvLine(\"alpha, beta , gamma \"), [\"alpha\", \"beta\", \"gamma\"]);\n     });\n     ```\n\n   - This:\n     - Verifies only simple comma splitting plus (implicit) whitespace handling expectation.\n     - Does **not** cover any quoted scenarios:\n       - No embedded commas.\n       - No escaped quotes.\n       - No multiline fields or boundary edge cases.\n     - Locks in only the behavior that `\"alpha, beta , gamma \"` maps to `[\"alpha\", \"beta\", \"gamma\"]`.\n\n   - When implementing proper quoted handling, preserving this existing test (and its “trim without changing public API” wording) will be easy, but **there is no safety net for the core quoted‑field semantics**, especially the delimiter‑inside‑quotes case.\n\n4. **Risk of subtle, silent regressions in a future “quote‑aware” refactor**  \n   If/when `parseCsvLine` is updated to handle quotes:\n\n   - Implementers must reconcile:\n     - Correct handling of commas inside quotes, and\n     - Existing expectations about trimming (from the current test).\n   - Common pitfalls that could emerge:\n     - Only partially handling quotes, e.g., ignoring a leading quote but still splitting on internal commas.\n     - Handling quotes but accidentally trimming inside quoted content (e.g., `\" b,eta \"` → `\"b,eta\"` vs `\" b,eta \"` depending on spec).\n     - Mishandling malformed lines and drifting state across fields.\n\n   Because **no tests currently assert the correct handling of `\"b,eta\"` as a single field**, a future refactor might:\n   - Appear to work on simple test cases.\n   - Continue to break or subtly corrupt data where commas appear inside quotes.\n\nCompared to other missing behaviors (escaped double quotes, embedded newlines, quote edge cases at line boundaries), quoted‑fields‑with‑commas are:\n\n- More common in real CSV usage.\n- More directly tied to the primary role of a CSV parser (correct column separation).\n- More likely to remain under‑tested if tests are only incrementally expanded.\n\n**Conclusion:**  \nThe highest‑risk potential regression is incorrect handling of commas inside properly quoted fields—specifically, failing to treat `\"b,eta\"` as a single field and instead splitting it at the internal comma. This is both currently incorrect, completely untested, and almost certain to be stressed or broken in any upcoming change to make `parseCsvLine` quote‑aware."
+      },
+      "taskStayedWithinDelegatedScope": true,
+      "persistedArtifactsLocation": {
+        "parentContextEngineRun": null,
+        "childContextEngineRun": null,
+        "handoffArtifact": null,
+        "parentSessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/subagent-host-BI9zxg/session.jsonl",
+        "childSessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/openclaw-state/agents/main/sessions/6fa1af47-972f-4050-ae5b-a5817a6f4ddd.jsonl",
+        "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/subagent-host-BI9zxg/workspace"
+      }
+    },
+    {
+      "label": "subagent-native",
+      "task": "Use the sessions_spawn tool exactly once to delegate a narrow review of parseCsvLine quoted-field handling and regression risk. Do not edit files yourself. The child should only inspect parser.js and parser.test.js and report the single highest-risk regression. After spawning, report the delegated scope and child session key only.",
+      "attemptCount": 1,
+      "failureClassification": null,
+      "validationOutcome": "valid_product_result",
+      "productValid": true,
+      "externallyBlocked": false,
+      "retryable": false,
+      "failureReason": null,
+      "hostPathUsed": "embedded-runner / steward-bounded-context-engine + gateway child",
+      "stewardContextEngineModeActive": true,
+      "parentRoutePlan": {
+        "taskType": "review",
+        "complexity": "multi_step",
+        "risk": "medium",
+        "domainSpecificity": "repo_specific",
+        "executionMode": "reviewer",
+        "contextBudget": {
+          "alwaysOnMaxTokens": 200,
+          "retrievalMaxUnits": 2,
+          "retrievalMaxTokens": 140
+        },
+        "decisionTrace": {
+          "traceId": "steward-trace-164fef84-2549-421a-9ed1-979277550b9e",
+          "summary": "task_type=review;complexity=multi_step;domain=repo_specific;risk=medium;mode=reviewer",
+          "steps": [
+            {
+              "code": "TASK_TYPE",
+              "evidence": "Use the sessions_spawn tool exactly once to delegate a narrow review of parseCsvLine quoted-field handling and regression risk. Do not edit files yourself. The child should only inspect parser.js and parser.test.js and report the single highest-risk regression. After spawning, report the delegated scope and child session key only.",
+              "effect": {
+                "taskType": "review"
+              },
+              "reason": "Task type inferred from explicit request keywords."
+            },
+            {
+              "code": "COMPLEXITY",
+              "evidence": "Use the sessions_spawn tool exactly once to delegate a narrow review of parseCsvLine quoted-field handling and regression risk. Do not edit files yourself. The child should only inspect parser.js and parser.test.js and report the single highest-risk regression. After spawning, report the delegated scope and child session key only.",
+              "effect": {
+                "complexity": "multi_step"
+              },
+              "reason": "Complexity is inferred from task shape and ambiguity markers."
+            },
+            {
+              "code": "DOMAIN_SPECIFICITY",
+              "evidence": "continuation_of=null, local_context=0",
+              "effect": {
+                "domainSpecificity": "repo_specific"
+              },
+              "reason": "Domain specificity reflects continuation state and repo-local signals."
+            },
+            {
+              "code": "RISK",
+              "evidence": "Use the sessions_spawn tool exactly once to delegate a narrow review of parseCsvLine quoted-field handling and regression risk. Do not edit files yourself. The child should only inspect parser.js and parser.test.js and report the single highest-risk regression. After spawning, report the delegated scope and child session key only.",
+              "effect": {
+                "risk": "medium"
+              },
+              "reason": "Risk rises for compatibility-sensitive and externally sensitive work."
+            },
+            {
+              "code": "EXECUTION_MODE",
+              "evidence": "risk=medium, complexity=multi_step, domain=repo_specific",
+              "effect": {
+                "executionMode": "reviewer"
+              },
+              "reason": "Execution mode follows the deterministic MVP routing matrix."
+            },
+            {
+              "code": "CONTEXT_BUDGET",
+              "evidence": "always_on=200, retrieval_units=2, retrieval_tokens=140",
+              "effect": {
+                "contextBudget": {
+                  "alwaysOnMaxTokens": 200,
+                  "retrievalMaxUnits": 2,
+                  "retrievalMaxTokens": 140
+                }
+              },
+              "reason": "Context budget is determined by execution mode and sparse-context limits."
+            }
+          ]
+        }
+      },
+      "parentRetrievalPlan": {
+        "loadLaws": true,
+        "loadProjectNotes": true,
+        "loadEpisodeSummary": false,
+        "lawQueries": [
+          "use",
+          "the",
+          "sessions_spawn",
+          "tool",
+          "exactly",
+          "once",
+          "to",
+          "delegate",
+          "a",
+          "narrow",
+          "review",
+          "of",
+          "parsecsvline",
+          "quoted",
+          "field",
+          "handling",
+          "and",
+          "regression",
+          "risk",
+          "do",
+          "not",
+          "edit",
+          "files",
+          "yourself",
+          "child",
+          "should",
+          "only",
+          "inspect",
+          "parser",
+          "js",
+          "test",
+          "report",
+          "single",
+          "highest",
+          "after",
+          "spawning",
+          "delegated",
+          "scope",
+          "session",
+          "key"
+        ],
+        "projectQueries": [
+          "use",
+          "the",
+          "sessions_spawn",
+          "tool",
+          "exactly",
+          "once",
+          "to",
+          "delegate",
+          "a",
+          "narrow",
+          "review",
+          "of",
+          "parsecsvline",
+          "quoted",
+          "field",
+          "handling",
+          "and",
+          "regression",
+          "risk",
+          "do",
+          "not",
+          "edit",
+          "files",
+          "yourself",
+          "child",
+          "should",
+          "only",
+          "inspect",
+          "parser",
+          "js",
+          "test",
+          "report",
+          "single",
+          "highest",
+          "after",
+          "spawning",
+          "delegated",
+          "scope",
+          "session",
+          "key"
+        ],
+        "episodeQueries": [],
+        "maxUnits": 2,
+        "maxTokens": 140,
+        "noLoad": false,
+        "gateTrace": {
+          "traceId": "steward-trace-164fef84-2549-421a-9ed1-979277550b9e",
+          "summary": "LAW_GATE; PROJECT_NOTE_GATE",
+          "steps": [
+            {
+              "code": "LAW_GATE",
+              "evidence": "Task risk, review mode, or explicit compatibility constraint triggered law retrieval.",
+              "effect": {
+                "loadLaws": true
+              },
+              "reason": "Laws help enforce bounded behavior and review priorities."
+            },
+            {
+              "code": "PROJECT_NOTE_GATE",
+              "evidence": "Repo-specific task or local context is present.",
+              "effect": {
+                "loadProjectNotes": true
+              },
+              "reason": "Project notes may capture sensitive local conventions."
+            }
+          ]
+        }
+      },
+      "noLoad": false,
+      "subagentDelegationOccurred": true,
+      "handoff": {
+        "childSessionKey": "agent:main:subagent:2bfc2df8-ebc7-4817-be72-834abc5b3486",
+        "childRunId": "5adf1f65-ee4e-42c8-8359-da8a5c8bb5aa",
+        "handoffArtifactPath": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/subagent-native-u5fKvY/workspace/.steward/context-engine/handoffs/steward-run-a57990c5-4e17-440c-bbf8-dd49cfa4bb07-call_EN42jbOOU2bHsHtgKVDoS9IF-fc_055c106689380b800169bc5cb7884081908e4f4c99b7d9c135.json",
+        "inheritsFullTranscriptPrevented": true,
+        "localContextRefs": [],
+        "retrievedUnitIds": [
+          "law_002",
+          "pn_001"
+        ]
+      },
+      "promptInflation": {
+        "parent": {
+          "systemPromptChars": 4400,
+          "projectContextChars": 0,
+          "injectedWorkspaceFilesCount": 0,
+          "injectedWorkspaceChars": 0,
+          "skillsPromptChars": 0,
+          "containsStewardKernel": true,
+          "containsAgentsMd": false,
+          "containsProjectContext": false
+        },
+        "child": {
+          "systemPromptChars": 7472,
+          "projectContextChars": 0,
+          "injectedWorkspaceFilesCount": 0,
+          "injectedWorkspaceChars": 0,
+          "skillsPromptChars": 0,
+          "toolCount": 0
+        }
+      },
+      "modelBoundaryTools": {
+        "parent": [
+          "read",
+          "exec",
+          "sessions_spawn"
+        ],
+        "child": [
+          "read",
+          "exec"
+        ]
+      },
+      "actualToolCalls": {
+        "parent": [
+          "sessions_spawn"
+        ],
+        "child": [
+          "read"
+        ]
+      },
+      "outputQuality": {
+        "parent": "Delegated scope:\n- Child agent will review `parser.js` and `parser.test.js` only.\n- Focus: `parseCsvLine` quoted-field handling, emphasizing scope drift, API compatibility, and behavior changes.\n- Actions allowed to child: read those two files; optionally run the narrowest possible test command limited to `parser.test.js` (e.g., `node --test parser.test.js`) if appropriate.\n- Deliverable from child: identify and explain the single highest-risk regression related to quoted-field parsing, with a brief rationale for why it is the highest risk.\n\nChild session key:\n- `agent:main:subagent:2bfc2df8-ebc7-4817-be72-834abc5b3486`",
+        "child": "What I found\n\n1. **Current implementation (parser.js)**  \n   ```js\n   export function parseCsvLine(input) {\n     return input.split(\",\");\n   }\n   ```\n   - `parseCsvLine` is now a **naive comma-splitter**.\n   - It has **no handling for quoted fields** (e.g. `\"a,b\",c`, embedded quotes, escaped quotes, etc.).\n   - Public API shape is preserved (same name, same single string parameter, returns array of strings).\n\n2. **Current test (parser.test.js)**  \n   ```js\n   import test from \"node:test\";\n   import assert from \"node:assert/strict\";\n   import { parseCsvLine } from \"./parser.js\";\n\n   test(\"parseCsvLine trims whitespace without changing public API\", () => {\n     assert.deepEqual(parseCsvLine(\"alpha, beta , gamma \"), [\"alpha\", \"beta\", \"gamma\"]);\n   });\n   ```\n   - The test only asserts **whitespace trimming** and explicitly mentions “without changing public API”.\n   - It does **not** exercise or protect any quoted-field behavior at all.\n   - As written, this test will actually fail (no trimming is implemented), but that’s a separate regression from the quoted-field concern.\n\n---\n\nHighest‑risk regression related to quoted-field parsing\n\n**Regression:** `parseCsvLine` no longer (or does not) support quoted CSV fields and instead performs a raw `input.split(\",\")`, which will incorrectly split on commas inside quotes and ignore any CSV quoting rules.\n\n**Why this is likely a regression:**\n\n- The function name and test description imply a **CSV-aware parser**:\n  - Name: `parseCsvLine` suggests CSV semantics, not generic comma-splitting.\n  - Test title: “trims whitespace without changing public API” implies that changes were intended to be *additive* (e.g., trimming) while keeping the **existing behavior** and API intact.  \n- In typical CSV parsers, handling of quoted fields is standard, expected behavior:\n  - `\"a,b\",c` should become `[\"a,b\", \"c\"]`.\n  - `\"multi\\nline\",x` and escaped quotes (`\"a\"\"b\"`) are common CSV cases.\n- If earlier implementations supported CSV quoting (very likely given the naming and intent to preserve the public API), the current implementation represents a **behavioral downgrade** rather than a refactor.\n\n**Concrete impact of this regression**\n\nFor any input with quoted fields, behavior is now wrong and breaks compatibility:\n\n- Example:\n  ```js\n  parseCsvLine('\"a,b\",c')\n  // Expected (CSV-aware): [\"a,b\", \"c\"]\n  // Actual now: ['\"a', 'b\"', 'c']\n  ```\n- This is:\n  - **Silent** (no error is thrown).\n  - **API-compatible on the surface** (same function, same argument/return types).\n  - **Semantically incompatible** with prior expectations: downstream code that previously received clean fields now receives incorrectly split arrays and may misinterpret data or crash later.\n\n---\n\nWhy this is the single highest-risk issue\n\n1. **Scope drift vs. module’s apparent contract**  \n   The function has effectively shifted from “CSV line parser” to “simple comma splitter” without any change in name, signature, or documentation, which is classic scope drift. Callers still believe they are using a CSV parser.\n\n2. **API compatibility risk is high but non-obvious**  \n   - The **public API signature is unchanged**, so no compile-time or import-time errors.\n   - The type of the return value is the same (`string[]`), so many tests or type-checkers won’t catch it.\n   - Failures appear only at the **data/semantic level**, which can surface much later (e.g., incorrect column mapping, mis-aggregated data, or data loss).\n\n3. **Quoted-field use is common in real CSVs**  \n   - Many real-world CSVs rely on quoted fields to embed commas, newlines, or quotes inside data.\n   - For such inputs, this regression **breaks core functionality**, not edge cases.\n\n4. **Current tests no longer guard quoted behavior at all**  \n   - The only existing test is focused on whitespace trimming and says nothing about quoted fields.\n   - This makes the quoted-field regression both **likely to slip through** and **hard to detect early**.\n\nBecause it combines silent behavioral change, preserved API surface, loss of core CSV functionality, and lack of test coverage, the loss of quoted-field handling in `parseCsvLine` is the single highest‑risk regression in the current code."
+      },
+      "taskStayedWithinDelegatedScope": true,
+      "persistedArtifactsLocation": {
+        "parentContextEngineRun": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/subagent-native-u5fKvY/workspace/.steward/context-engine/runs/live-subagent-native.json",
+        "childContextEngineRun": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/subagent-native-u5fKvY/workspace/.steward/context-engine/runs/5adf1f65-ee4e-42c8-8359-da8a5c8bb5aa.json",
+        "handoffArtifact": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/subagent-native-u5fKvY/workspace/.steward/context-engine/handoffs/steward-run-a57990c5-4e17-440c-bbf8-dd49cfa4bb07-call_EN42jbOOU2bHsHtgKVDoS9IF-fc_055c106689380b800169bc5cb7884081908e4f4c99b7d9c135.json",
+        "parentSessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/subagent-native-u5fKvY/session.jsonl",
+        "childSessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/openclaw-state/agents/main/sessions/15f07be1-0270-4582-9f17-3dd5ddd4094b.jsonl",
+        "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-subagent-live-Cip4OA/subagent-native-u5fKvY/workspace"
+      }
+    }
+  ],
+  "summary": {
+    "totalRuns": 2,
+    "validProductResults": 2,
+    "externallyBlockedRuns": 0,
+    "providerConnections": 0,
+    "providerTimeouts": 0,
+    "authFailures": 0,
+    "harnessFailures": 0,
+    "runtimeFailures": 0
+  },
+  "workflowFailure": null,
+  "workflowBootstrapError": null
+}

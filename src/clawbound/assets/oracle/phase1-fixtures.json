@@ -1,0 +1,28 @@
+[
+  {
+    "id": "phase1-answer-explain-parser",
+    "userInput": "Explain what this parser function does.",
+    "expected": {
+      "taskType": "answer",
+      "executionMode": "answer",
+      "noLoad": true,
+      "retrievedUnitIds": [],
+      "toolProfile": "answer-minimal",
+      "allowedTools": ["read_file"],
+      "deniedTools": ["edit_file", "write_file", "delete_file", "run_command", "message"]
+    }
+  },
+  {
+    "id": "phase1-executor-fix-parser",
+    "userInput": "Fix the failing parser test without changing public API.",
+    "expected": {
+      "taskType": "code_change",
+      "executionMode": "executor_then_reviewer",
+      "noLoad": false,
+      "retrievedUnitIds": ["pn_002", "pn_001", "law_002"],
+      "toolProfile": "executor-bounded",
+      "allowedTools": ["read_file", "edit_file", "run_tests", "run_command"],
+      "deniedTools": ["delete_file"]
+    }
+  }
+]

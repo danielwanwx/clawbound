@@ -1,0 +1,16 @@
+{
+  "id": "es_001",
+  "type": "episode_summary",
+  "scope": "task",
+  "applicability": "continuation flows",
+  "content": "Last run touched payment retry logic and preserved external behavior.",
+  "confidence": 0.75,
+  "priority": 0.7,
+  "token_estimate": 19,
+  "source_ref": "run:run-seed-001",
+  "last_validated_at": "2026-03-14T00:00:00Z",
+  "tags": ["continuation", "payments"],
+  "enabled": true,
+  "run_id": "run-seed-001",
+  "session_id": "session-seed-001"
+}

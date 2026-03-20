@@ -1,0 +1,1189 @@
+{
+  "createdAt": "2026-03-19T20:31:18.402Z",
+  "provider": "openai-codex",
+  "model": "gpt-5.1",
+  "modelBinding": {
+    "intended": {
+      "provider": "openai-codex",
+      "model": "gpt-5.1"
+    },
+    "actual": {
+      "provider": "openai-codex",
+      "model": "gpt-5.1"
+    },
+    "diverged": false,
+    "divergenceStage": "none"
+  },
+  "scenarios": [
+    {
+      "label": "multiturn-host",
+      "attemptCount": 1,
+      "failureClassification": null,
+      "validationOutcome": "valid_product_result",
+      "productValid": true,
+      "externallyBlocked": false,
+      "retryable": false,
+      "failureReason": null,
+      "hostPathUsed": "embedded-runner / default-host-path",
+      "stewardMode": false,
+      "turns": [
+        {
+          "turn": 1,
+          "label": "multiturn-host:turn-1",
+          "prompt": "Explain what parseCsvLine currently does in parser.js. Read the file first. Do not edit files.",
+          "stewardContextEngineModeActive": false,
+          "routePlan": null,
+          "retrievalPlan": null,
+          "noLoad": null,
+          "promptInflationIndicators": {
+            "systemPromptChars": 25597,
+            "projectContextChars": 4930,
+            "injectedWorkspaceFilesCount": 7,
+            "injectedWorkspaceChars": 4606,
+            "skillsPromptChars": 12354,
+            "observedContainsStewardKernel": false,
+            "observedContainsAgentsMd": true,
+            "observedContainsProjectContext": true,
+            "observedContainsRetrievedSnippets": false,
+            "modelBoundaryCallCount": 2
+          },
+          "modelBoundaryTools": [
+            "read",
+            "edit",
+            "write",
+            "exec",
+            "process",
+            "browser",
+            "canvas",
+            "nodes",
+            "cron",
+            "message",
+            "tts",
+            "gateway",
+            "agents_list",
+            "sessions_list",
+            "sessions_history",
+            "sessions_send",
+            "sessions_spawn",
+            "session_status",
+            "web_search",
+            "web_fetch",
+            "image",
+            "memory_search",
+            "memory_get"
+          ],
+          "actualToolCalls": [
+            "read"
+          ],
+          "outputQuality": "parseCsvLine is extremely simple right now:\n\n- It takes a single string argument `input`, which is expected to represent one line of CSV.\n- It returns the result of `input.split(\",\")`.\n\nIn other words, its current behavior is:\n\n```js\nexport function parseCsvLine(input) {\n  return input.split(\",\");\n}\n```\n\nSo it:\n\n- Splits the line on every literal comma `,`\n- Returns an array of substrings between those commas\n- Does not handle:\n  - Quoted fields\n  - Escaped quotes\n  - Commas inside quoted fields\n  - Whitespace trimming\n  - Empty lines or `null`/`undefined` safety\n\nExample:\n\n```js\nparseCsvLine(\"a,b,c\");          // [\"a\", \"b\", \"c\"]\nparseCsvLine(\"a,,c\");           // [\"a\", \"\", \"c\"]\nparseCsvLine('\"a,b\",c');        // ['\"a', 'b\"', 'c']   // incorrect for real CSV, but matches current implementation\n```",
+          "contextStayedBounded": false,
+          "persistedArtifactsLocation": {
+            "contextEngineRun": null,
+            "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/session.jsonl",
+            "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/workspace"
+          },
+          "continuityArtifacts": {
+            "compactArtifactPath": null,
+            "compactEventTypes": [],
+            "compactRetrievedUnitIds": [],
+            "activeContextLocalContextRefs": [],
+            "activeContextRetrievedUnitIds": [],
+            "omittedReasons": [],
+            "boundednessReasons": [],
+            "stayedBoundedByCompact": null,
+            "promptPackageTokens": null,
+            "retrievedUnitIds": []
+          }
+        },
+        {
+          "turn": 2,
+          "label": "multiturn-host:turn-2",
+          "prompt": "Review parseCsvLine edge cases in parser.js and parser.test.js without editing files. Focus on whitespace trimming and quoted fields. Run the focused parser test only if you need evidence.",
+          "stewardContextEngineModeActive": false,
+          "routePlan": null,
+          "retrievalPlan": null,
+          "noLoad": null,
+          "promptInflationIndicators": {
+            "systemPromptChars": 25597,
+            "projectContextChars": 4930,
+            "injectedWorkspaceFilesCount": 7,
+            "injectedWorkspaceChars": 4606,
+            "skillsPromptChars": 12354,
+            "observedContainsStewardKernel": false,
+            "observedContainsAgentsMd": true,
+            "observedContainsProjectContext": true,
+            "observedContainsRetrievedSnippets": false,
+            "modelBoundaryCallCount": 2
+          },
+          "modelBoundaryTools": [
+            "read",
+            "edit",
+            "write",
+            "exec",
+            "process",
+            "browser",
+            "canvas",
+            "nodes",
+            "cron",
+            "message",
+            "tts",
+            "gateway",
+            "agents_list",
+            "sessions_list",
+            "sessions_history",
+            "sessions_send",
+            "sessions_spawn",
+            "session_status",
+            "web_search",
+            "web_fetch",
+            "image",
+            "memory_search",
+            "memory_get"
+          ],
+          "actualToolCalls": [
+            "read"
+          ],
+          "outputQuality": "Here’s what the current setup tells us about edge cases, based on the actual code and tests.\n\n## 1. Current implementation\n\n```js\n// parser.js\nexport function parseCsvLine(input) {\n  return input.split(\",\");\n}\n```\n\nThis means, mechanically:\n\n- No trimming of whitespace\n- No special handling of quotes\n- Just a raw split on every `,`\n\n## 2. What the test expects\n\n```js\n// parser.test.js\ntest(\"parseCsvLine trims whitespace without changing public API\", () => {\n  assert.deepEqual(parseCsvLine(\"alpha, beta , gamma \"), [\"alpha\", \"beta\", \"gamma\"]);\n});\n```\n\nThe test name and assertion imply the *intended* behavior:\n\n- Input: `\"alpha, beta , gamma \"`\n- Expected: `[\"alpha\", \"beta\", \"gamma\"]`\n\nThat is, **each field should be trimmed of surrounding whitespace**.\n\nBut the current implementation actually returns:\n\n```js\nparseCsvLine(\"alpha, beta , gamma \");\n// [\"alpha\", \" beta \", \" gamma \"]\n```\n\nSo:\n\n- As written, `parseCsvLine` does **not** trim whitespace.\n- The test documents an expectation that it *should* trim whitespace while keeping the same function signature and return type (“without changing public API”).\n\n### Whitespace trimming edge case summary\n\n- Trailing spaces in a field: `\"gamma \"` → currently `\" gamma \"`, test expects `\"gamma\"`.\n- Leading spaces in a field: `\" beta\"` → currently `\" beta\"`, test would expect `\"beta\"`.\n- Spaces around commas: `\"alpha, beta\"` → currently `[\"alpha\", \" beta\"]`, test expects `[\"alpha\", \"beta\"]`.\n\nRight now, the code and the test are inconsistent; the test expresses desired behavior that the implementation doesn’t yet provide.\n\n## 3. Quoted fields\n\nThere is currently:\n\n- **No code** in `parseCsvLine` that treats quotes specially.\n- **No tests** in `parser.test.js` that mention or cover quoted fields.\n\nGiven the implementation, quoted fields behave like plain text with commas and quotes treated literally. For example:\n\n```js\nparseCsvLine('\"a,b\",c');\n// => ['\"a', 'b\"', 'c']\n```\n\nSo with respect to quoted fields:\n\n- Quotes are not recognized as delimiters or escape markers.\n- Commas inside quotes are not preserved as part of the field; they still split the line.\n- There is no handling of:\n  - `\"field with, comma\"`\n  - `\"field with \"\"escaped quotes\"\"\"`\n\n### Quoted field edge case summary\n\n- `\"a,b\",c` should ideally yield `[\"a,b\", \"c\"]` for proper CSV, but currently yields `['\"a', 'b\"', 'c']`.\n- `\" alpha \",beta` would, with trimming implemented naïvely, need careful handling not to strip meaningful internal spaces inside quotes. Currently:\n  - The function doesn’t trim, so it returns `['\" alpha \"', 'beta']` (which at least preserves spaces, but still treats quotes literally and doesn’t remove them).\n\n## 4. Evidence and tests\n\nYou asked to run the focused parser test only if needed. Here, the source alone is enough to see:\n\n- The implementation cannot satisfy the whitespace-trimming expectation.\n- Quoted fields are completely unsupported and untested.\n\nSo:\n\n- **Whitespace trimming**: intended by tests, but not implemented; current behavior returns untrimmed fields.\n- **Quoted fields**: no support in implementation; no tests specifying behavior; they’re effectively treated as ordinary characters and will break for real CSV.",
+          "contextStayedBounded": false,
+          "persistedArtifactsLocation": {
+            "contextEngineRun": null,
+            "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/session.jsonl",
+            "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/workspace"
+          },
+          "continuityArtifacts": {
+            "compactArtifactPath": null,
+            "compactEventTypes": [],
+            "compactRetrievedUnitIds": [],
+            "activeContextLocalContextRefs": [],
+            "activeContextRetrievedUnitIds": [],
+            "omittedReasons": [],
+            "boundednessReasons": [],
+            "stayedBoundedByCompact": null,
+            "promptPackageTokens": null,
+            "retrievedUnitIds": []
+          }
+        },
+        {
+          "turn": 3,
+          "label": "multiturn-host:turn-3",
+          "prompt": "Make the narrowest fix in parser.js so parser.test.js passes without changing public API. Run the focused parser test before finalizing.",
+          "stewardContextEngineModeActive": false,
+          "routePlan": null,
+          "retrievalPlan": null,
+          "noLoad": null,
+          "promptInflationIndicators": {
+            "systemPromptChars": 25597,
+            "projectContextChars": 4930,
+            "injectedWorkspaceFilesCount": 7,
+            "injectedWorkspaceChars": 4606,
+            "skillsPromptChars": 12354,
+            "observedContainsStewardKernel": false,
+            "observedContainsAgentsMd": true,
+            "observedContainsProjectContext": true,
+            "observedContainsRetrievedSnippets": false,
+            "modelBoundaryCallCount": 3
+          },
+          "modelBoundaryTools": [
+            "read",
+            "edit",
+            "write",
+            "exec",
+            "process",
+            "browser",
+            "canvas",
+            "nodes",
+            "cron",
+            "message",
+            "tts",
+            "gateway",
+            "agents_list",
+            "sessions_list",
+            "sessions_history",
+            "sessions_send",
+            "sessions_spawn",
+            "session_status",
+            "web_search",
+            "web_fetch",
+            "image",
+            "memory_search",
+            "memory_get"
+          ],
+          "actualToolCalls": [
+            "edit",
+            "exec"
+          ],
+          "outputQuality": "The narrowest possible fix to make `parser.test.js` pass, without changing the public API, is to trim each field after splitting:\n\n```js\nexport function parseCsvLine(input) {\n  return input.split(\",\").map((field) => field.trim());\n}\n```\n\n- Public API is unchanged:\n  - Same function name\n  - Same single `input` parameter\n  - Still returns an array of strings\n- Behavior now matches the test expectation:\n  - `parseCsvLine(\"alpha, beta , gamma \")` → `[\"alpha\", \"beta\", \"gamma\"]`\n\nI attempted to run the focused test with:\n\n```sh\nnpm test -- parser.test.js\n```\n\nbut the project has no `test` script defined in `package.json`, so the command failed with `Missing script: \"test\"`. The change is nonetheless minimal and directly aligned with the existing test’s assertion.",
+          "contextStayedBounded": false,
+          "persistedArtifactsLocation": {
+            "contextEngineRun": null,
+            "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/session.jsonl",
+            "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/workspace"
+          },
+          "continuityArtifacts": {
+            "compactArtifactPath": null,
+            "compactEventTypes": [],
+            "compactRetrievedUnitIds": [],
+            "activeContextLocalContextRefs": [],
+            "activeContextRetrievedUnitIds": [],
+            "omittedReasons": [],
+            "boundednessReasons": [],
+            "stayedBoundedByCompact": null,
+            "promptPackageTokens": null,
+            "retrievedUnitIds": []
+          }
+        },
+        {
+          "turn": 4,
+          "label": "multiturn-host:turn-4",
+          "prompt": "Verify in two bullets what changed in parser.js and whether parser.test.js now passes. Do not make further edits.",
+          "stewardContextEngineModeActive": false,
+          "routePlan": null,
+          "retrievalPlan": null,
+          "noLoad": null,
+          "promptInflationIndicators": {
+            "systemPromptChars": 25597,
+            "projectContextChars": 4930,
+            "injectedWorkspaceFilesCount": 7,
+            "injectedWorkspaceChars": 4606,
+            "skillsPromptChars": 12354,
+            "observedContainsStewardKernel": false,
+            "observedContainsAgentsMd": true,
+            "observedContainsProjectContext": true,
+            "observedContainsRetrievedSnippets": false,
+            "modelBoundaryCallCount": 1
+          },
+          "modelBoundaryTools": [
+            "read",
+            "edit",
+            "write",
+            "exec",
+            "process",
+            "browser",
+            "canvas",
+            "nodes",
+            "cron",
+            "message",
+            "tts",
+            "gateway",
+            "agents_list",
+            "sessions_list",
+            "sessions_history",
+            "sessions_send",
+            "sessions_spawn",
+            "session_status",
+            "web_search",
+            "web_fetch",
+            "image",
+            "memory_search",
+            "memory_get"
+          ],
+          "actualToolCalls": [],
+          "outputQuality": "- In `parser.js`, `parseCsvLine` was updated from a raw split to trimming each field after splitting: from `return input.split(\",\");` to `return input.split(\",\").map((field) => field.trim());`. No parameters or return type were changed.\n\n- I attempted to run `npm test -- parser.test.js`, but it failed because there is no `\"test\"` script in `package.json`. So while the implementation now matches the test’s expectation, I could not actually execute the test suite to confirm it passes.",
+          "contextStayedBounded": false,
+          "persistedArtifactsLocation": {
+            "contextEngineRun": null,
+            "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/session.jsonl",
+            "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/workspace"
+          },
+          "continuityArtifacts": {
+            "compactArtifactPath": null,
+            "compactEventTypes": [],
+            "compactRetrievedUnitIds": [],
+            "activeContextLocalContextRefs": [],
+            "activeContextRetrievedUnitIds": [],
+            "omittedReasons": [],
+            "boundednessReasons": [],
+            "stayedBoundedByCompact": null,
+            "promptPackageTokens": null,
+            "retrievedUnitIds": []
+          }
+        }
+      ],
+      "sessionLevel": {
+        "contextEngineArtifactsProduced": false,
+        "activeContextStayedBounded": false,
+        "silentPromptGrowthDetected": false,
+        "systemPromptCharsByTurn": [
+          25597,
+          25597,
+          25597,
+          25597
+        ],
+        "promptPackageTokensByTurn": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "finalParserTest": {
+          "exitCode": 0,
+          "stdout": "✔ parseCsvLine trims whitespace without changing public API (0.981083ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 61.125333",
+          "stderr": ""
+        },
+        "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/workspace",
+        "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-host-CDXL38/session.jsonl"
+      }
+    },
+    {
+      "label": "multiturn-native",
+      "attemptCount": 1,
+      "failureClassification": null,
+      "validationOutcome": "valid_product_result",
+      "productValid": true,
+      "externallyBlocked": false,
+      "retryable": false,
+      "failureReason": null,
+      "hostPathUsed": "embedded-runner / steward-bounded-context-engine",
+      "stewardMode": true,
+      "turns": [
+        {
+          "turn": 1,
+          "label": "multiturn-native:turn-1",
+          "prompt": "Explain what parseCsvLine currently does in parser.js. Read the file first. Do not edit files.",
+          "stewardContextEngineModeActive": true,
+          "routePlan": {
+            "taskType": "answer",
+            "complexity": "bounded",
+            "risk": "medium",
+            "domainSpecificity": "repo_specific",
+            "executionMode": "answer",
+            "contextBudget": {
+              "alwaysOnMaxTokens": 180,
+              "retrievalMaxUnits": 0,
+              "retrievalMaxTokens": 0
+            },
+            "decisionTrace": {
+              "traceId": "steward-trace-76679bda-41a8-41c2-a848-95c635a32b14",
+              "summary": "task_type=answer;complexity=bounded;domain=repo_specific;risk=medium;mode=answer",
+              "steps": [
+                {
+                  "code": "TASK_TYPE",
+                  "evidence": "Explain what parseCsvLine currently does in parser.js. Read the file first. Do not edit files.",
+                  "effect": {
+                    "taskType": "answer"
+                  },
+                  "reason": "Task type inferred from explicit request keywords."
+                },
+                {
+                  "code": "COMPLEXITY",
+                  "evidence": "Explain what parseCsvLine currently does in parser.js. Read the file first. Do not edit files.",
+                  "effect": {
+                    "complexity": "bounded"
+                  },
+                  "reason": "Complexity is inferred from task shape and ambiguity markers."
+                },
+                {
+                  "code": "DOMAIN_SPECIFICITY",
+                  "evidence": "continuation_of=null, local_context=0",
+                  "effect": {
+                    "domainSpecificity": "repo_specific"
+                  },
+                  "reason": "Domain specificity reflects continuation state and repo-local signals."
+                },
+                {
+                  "code": "RISK",
+                  "evidence": "Explain what parseCsvLine currently does in parser.js. Read the file first. Do not edit files.",
+                  "effect": {
+                    "risk": "medium"
+                  },
+                  "reason": "Risk rises for compatibility-sensitive and externally sensitive work."
+                },
+                {
+                  "code": "EXECUTION_MODE",
+                  "evidence": "risk=medium, complexity=bounded, domain=repo_specific",
+                  "effect": {
+                    "executionMode": "answer"
+                  },
+                  "reason": "Execution mode follows the deterministic MVP routing matrix."
+                },
+                {
+                  "code": "CONTEXT_BUDGET",
+                  "evidence": "always_on=180, retrieval_units=0, retrieval_tokens=0",
+                  "effect": {
+                    "contextBudget": {
+                      "alwaysOnMaxTokens": 180,
+                      "retrievalMaxUnits": 0,
+                      "retrievalMaxTokens": 0
+                    }
+                  },
+                  "reason": "Context budget is determined by execution mode and sparse-context limits."
+                }
+              ]
+            }
+          },
+          "retrievalPlan": {
+            "loadLaws": false,
+            "loadProjectNotes": false,
+            "loadEpisodeSummary": false,
+            "lawQueries": [],
+            "projectQueries": [],
+            "episodeQueries": [],
+            "maxUnits": 0,
+            "maxTokens": 0,
+            "noLoad": true,
+            "gateTrace": {
+              "traceId": "steward-trace-76679bda-41a8-41c2-a848-95c635a32b14",
+              "summary": "NO_LOAD",
+              "steps": [
+                {
+                  "code": "NO_LOAD",
+                  "evidence": "No deterministic gate opened for this task.",
+                  "effect": {
+                    "noLoad": true
+                  },
+                  "reason": "Sparse context is the default outcome."
+                }
+              ]
+            }
+          },
+          "noLoad": true,
+          "promptInflationIndicators": {
+            "systemPromptChars": 3566,
+            "projectContextChars": 0,
+            "injectedWorkspaceFilesCount": 0,
+            "injectedWorkspaceChars": 0,
+            "skillsPromptChars": 0,
+            "observedContainsStewardKernel": true,
+            "observedContainsAgentsMd": false,
+            "observedContainsProjectContext": false,
+            "observedContainsRetrievedSnippets": true,
+            "modelBoundaryCallCount": 2
+          },
+          "modelBoundaryTools": [
+            "read"
+          ],
+          "actualToolCalls": [
+            "read"
+          ],
+          "outputQuality": "`parseCsvLine` in `parser.js` currently does the simplest possible CSV parsing:\n\n```js\nexport function parseCsvLine(input) {\n  return input.split(\",\");\n}\n```\n\nExplanation:\n\n- It takes a single string argument `input`, which is expected to be one line of CSV text.\n- It splits that string on every comma character `,`.\n- It returns the resulting array of substrings.\n\nSo for example:\n\n```js\nparseCsvLine(\"a,b,c\");        // [\"a\", \"b\", \"c\"]\nparseCsvLine(\"hello,world\");  // [\"hello\", \"world\"]\n```\n\nIt does not handle any CSV complexities such as:\n- Quoted fields (`\"a,b\"` being a single field),\n- Escaped quotes (`\"He said \"\"hi\"\"\"`),\n- Commas inside quoted fields,\n- Whitespace trimming.\n\nIt’s a pure string split with no additional logic.",
+          "contextStayedBounded": true,
+          "persistedArtifactsLocation": {
+            "contextEngineRun": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace/.steward/context-engine/runs/live-multiturn-native-turn-1.json",
+            "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/session.jsonl",
+            "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace"
+          },
+          "continuityArtifacts": {
+            "compactArtifactPath": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace/.steward/context-engine/compacts/steward-run-f18836e4-f80c-4c08-901d-b58e8f2dab55.json",
+            "compactEventTypes": [
+              "task_received",
+              "route_decided",
+              "gate_decided",
+              "retrieval_executed",
+              "prompt_built",
+              "tool_profile_built",
+              "run_completed"
+            ],
+            "compactRetrievedUnitIds": [],
+            "activeContextLocalContextRefs": [],
+            "activeContextRetrievedUnitIds": [],
+            "omittedReasons": [
+              "full_transcript_not_loaded",
+              "host_workspace_inflation_not_loaded",
+              "host_skills_prompt_not_loaded"
+            ],
+            "boundednessReasons": [
+              "no_host_workspace_inflation",
+              "no_host_skills_prompt",
+              "no_load_selected",
+              "always_on_within_budget",
+              "retrieval_within_budget"
+            ],
+            "stayedBoundedByCompact": true,
+            "promptPackageTokens": 97,
+            "retrievedUnitIds": []
+          }
+        },
+        {
+          "turn": 2,
+          "label": "multiturn-native:turn-2",
+          "prompt": "Review parseCsvLine edge cases in parser.js and parser.test.js without editing files. Focus on whitespace trimming and quoted fields. Run the focused parser test only if you need evidence.",
+          "stewardContextEngineModeActive": true,
+          "routePlan": {
+            "taskType": "review",
+            "complexity": "multi_step",
+            "risk": "medium",
+            "domainSpecificity": "repo_specific",
+            "executionMode": "reviewer",
+            "contextBudget": {
+              "alwaysOnMaxTokens": 200,
+              "retrievalMaxUnits": 2,
+              "retrievalMaxTokens": 140
+            },
+            "decisionTrace": {
+              "traceId": "steward-trace-2be0970a-334c-4dac-8c28-64a3084bb8f2",
+              "summary": "task_type=review;complexity=multi_step;domain=repo_specific;risk=medium;mode=reviewer",
+              "steps": [
+                {
+                  "code": "TASK_TYPE",
+                  "evidence": "Review parseCsvLine edge cases in parser.js and parser.test.js without editing files. Focus on whitespace trimming and quoted fields. Run the focused parser test only if you need evidence.",
+                  "effect": {
+                    "taskType": "review"
+                  },
+                  "reason": "Task type inferred from explicit request keywords."
+                },
+                {
+                  "code": "COMPLEXITY",
+                  "evidence": "Review parseCsvLine edge cases in parser.js and parser.test.js without editing files. Focus on whitespace trimming and quoted fields. Run the focused parser test only if you need evidence.",
+                  "effect": {
+                    "complexity": "multi_step"
+                  },
+                  "reason": "Complexity is inferred from task shape and ambiguity markers."
+                },
+                {
+                  "code": "DOMAIN_SPECIFICITY",
+                  "evidence": "continuation_of=null, local_context=0",
+                  "effect": {
+                    "domainSpecificity": "repo_specific"
+                  },
+                  "reason": "Domain specificity reflects continuation state and repo-local signals."
+                },
+                {
+                  "code": "RISK",
+                  "evidence": "Review parseCsvLine edge cases in parser.js and parser.test.js without editing files. Focus on whitespace trimming and quoted fields. Run the focused parser test only if you need evidence.",
+                  "effect": {
+                    "risk": "medium"
+                  },
+                  "reason": "Risk rises for compatibility-sensitive and externally sensitive work."
+                },
+                {
+                  "code": "EXECUTION_MODE",
+                  "evidence": "risk=medium, complexity=multi_step, domain=repo_specific",
+                  "effect": {
+                    "executionMode": "reviewer"
+                  },
+                  "reason": "Execution mode follows the deterministic MVP routing matrix."
+                },
+                {
+                  "code": "CONTEXT_BUDGET",
+                  "evidence": "always_on=200, retrieval_units=2, retrieval_tokens=140",
+                  "effect": {
+                    "contextBudget": {
+                      "alwaysOnMaxTokens": 200,
+                      "retrievalMaxUnits": 2,
+                      "retrievalMaxTokens": 140
+                    }
+                  },
+                  "reason": "Context budget is determined by execution mode and sparse-context limits."
+                }
+              ]
+            }
+          },
+          "retrievalPlan": {
+            "loadLaws": true,
+            "loadProjectNotes": true,
+            "loadEpisodeSummary": false,
+            "lawQueries": [
+              "review",
+              "parsecsvline",
+              "edge",
+              "cases",
+              "in",
+              "parser",
+              "js",
+              "and",
+              "test",
+              "without",
+              "editing",
+              "files",
+              "focus",
+              "on",
+              "whitespace",
+              "trimming",
+              "quoted",
+              "fields",
+              "run",
+              "the",
+              "focused",
+              "only",
+              "if",
+              "you",
+              "need",
+              "evidence"
+            ],
+            "projectQueries": [
+              "review",
+              "parsecsvline",
+              "edge",
+              "cases",
+              "in",
+              "parser",
+              "js",
+              "and",
+              "test",
+              "without",
+              "editing",
+              "files",
+              "focus",
+              "on",
+              "whitespace",
+              "trimming",
+              "quoted",
+              "fields",
+              "run",
+              "the",
+              "focused",
+              "only",
+              "if",
+              "you",
+              "need",
+              "evidence"
+            ],
+            "episodeQueries": [],
+            "maxUnits": 2,
+            "maxTokens": 140,
+            "noLoad": false,
+            "gateTrace": {
+              "traceId": "steward-trace-2be0970a-334c-4dac-8c28-64a3084bb8f2",
+              "summary": "LAW_GATE; PROJECT_NOTE_GATE",
+              "steps": [
+                {
+                  "code": "LAW_GATE",
+                  "evidence": "Task risk, review mode, or explicit compatibility constraint triggered law retrieval.",
+                  "effect": {
+                    "loadLaws": true
+                  },
+                  "reason": "Laws help enforce bounded behavior and review priorities."
+                },
+                {
+                  "code": "PROJECT_NOTE_GATE",
+                  "evidence": "Repo-specific task or local context is present.",
+                  "effect": {
+                    "loadProjectNotes": true
+                  },
+                  "reason": "Project notes may capture sensitive local conventions."
+                }
+              ]
+            }
+          },
+          "noLoad": false,
+          "promptInflationIndicators": {
+            "systemPromptChars": 4170,
+            "projectContextChars": 0,
+            "injectedWorkspaceFilesCount": 0,
+            "injectedWorkspaceChars": 0,
+            "skillsPromptChars": 0,
+            "observedContainsStewardKernel": true,
+            "observedContainsAgentsMd": false,
+            "observedContainsProjectContext": false,
+            "observedContainsRetrievedSnippets": true,
+            "modelBoundaryCallCount": 2
+          },
+          "modelBoundaryTools": [
+            "read",
+            "exec"
+          ],
+          "actualToolCalls": [
+            "read"
+          ],
+          "outputQuality": "Here’s a focused review of the current `parseCsvLine` behavior versus what the tests imply, specifically for whitespace trimming and quoted fields.\n\n## 1. Current implementation\n\n```js\n// parser.js\nexport function parseCsvLine(input) {\n  return input.split(\",\");\n}\n```\n\nThis:\n\n- Splits the input string on every comma.\n- Returns the raw substrings with no further processing.\n- Does not trim whitespace.\n- Does not interpret quotes in any special way.\n\n## 2. What the test expects (whitespace)\n\n```js\n// parser.test.js\nimport test from \"node:test\";\nimport assert from \"node:assert/strict\";\nimport { parseCsvLine } from \"./parser.js\";\n\ntest(\"parseCsvLine trims whitespace without changing public API\", () => {\n  assert.deepEqual(parseCsvLine(\"alpha, beta , gamma \"), [\"alpha\", \"beta\", \"gamma\"]);\n});\n```\n\nThe test name and assertion show the intended behavior:\n\n- Input: `\"alpha, beta , gamma \"`\n- Expected output: `[\"alpha\", \"beta\", \"gamma\"]`\n\nBut the current implementation does:\n\n```js\nparseCsvLine(\"alpha, beta , gamma \");\n// => [\"alpha\", \" beta \", \" gamma \"]\n```\n\nSo, **whitespace trimming is currently not implemented** and the test’s expectation is not satisfied by the present code.\n\n### API considerations\n\nThe test description says “without changing public API,” which implies:\n\n- `parseCsvLine` should still accept a single string and return an array.\n- Enhancements should be internal (e.g., trimming each field) without altering the function signature or return type.\n- This is consistent with the `pn_001` note about preserving public method signatures.\n\n## 3. Quoted field behavior\n\nThere is **no test coverage in `parser.test.js` for quoted fields** and no code to handle them.\n\nGiven the current implementation:\n\n- `parseCsvLine('\"a,b\",c')` returns `['\"a', 'b\"', 'c']`\n- `parseCsvLine('\" spaced \",value')` returns `['\" spaced \"', 'value']` (note: no removal of outer quotes, no inner trimming)\n- Escaped quotes (`\"He said \"\"hi\"\"\"`) are not treated specially; they’re just part of the strings.\n\nSo in terms of edge cases:\n\n- **Quoted fields are not supported as CSV constructs**. Quotes are treated as ordinary characters.\n- This is a mismatch with typical CSV semantics, but there’s no explicit test indicating the desired quoted-field behavior yet.\n\n## 4. Summary of edge-case status\n\n- **Whitespace trimming**\n  - Intended by tests: leading/trailing spaces around fields should be removed.\n  - Actual: spaces are preserved because the function only does `input.split(\",\")`.\n  - → This is a clear behavioral gap / likely regression relative to the test’s intent.\n\n- **Quoted fields**\n  - No dedicated tests in `parser.test.js`.\n  - Actual implementation does not parse quotes or respect CSV quoting rules.\n  - → Any future support for quoted fields would be a behavioral enhancement and must maintain the same API shape.\n\nIf you’d like, I can next outline a compatible implementation strategy that:\n- Adds whitespace trimming per field, and\n- Sketches an approach to quoted fields,\nall while preserving the current `parseCsvLine(input: string): string[]` API.",
+          "contextStayedBounded": true,
+          "persistedArtifactsLocation": {
+            "contextEngineRun": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace/.steward/context-engine/runs/live-multiturn-native-turn-2.json",
+            "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/session.jsonl",
+            "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace"
+          },
+          "continuityArtifacts": {
+            "compactArtifactPath": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace/.steward/context-engine/compacts/steward-run-b6b5cccb-82a0-4d7a-a7c7-bf358ca859a2.json",
+            "compactEventTypes": [
+              "task_received",
+              "route_decided",
+              "gate_decided",
+              "retrieval_executed",
+              "prompt_built",
+              "tool_profile_built",
+              "run_completed"
+            ],
+            "compactRetrievedUnitIds": [
+              "law_002",
+              "pn_001"
+            ],
+            "activeContextLocalContextRefs": [],
+            "activeContextRetrievedUnitIds": [
+              "law_002",
+              "pn_001"
+            ],
+            "omittedReasons": [
+              "full_transcript_not_loaded",
+              "host_workspace_inflation_not_loaded",
+              "host_skills_prompt_not_loaded"
+            ],
+            "boundednessReasons": [
+              "no_host_workspace_inflation",
+              "no_host_skills_prompt",
+              "always_on_within_budget",
+              "retrieval_within_budget"
+            ],
+            "stayedBoundedByCompact": true,
+            "promptPackageTokens": 189,
+            "retrievedUnitIds": [
+              "law_002",
+              "pn_001"
+            ]
+          }
+        },
+        {
+          "turn": 3,
+          "label": "multiturn-native:turn-3",
+          "prompt": "Make the narrowest fix in parser.js so parser.test.js passes without changing public API. Run the focused parser test before finalizing.",
+          "stewardContextEngineModeActive": true,
+          "routePlan": {
+            "taskType": "code_change",
+            "complexity": "bounded",
+            "risk": "high",
+            "domainSpecificity": "repo_specific",
+            "executionMode": "executor_then_reviewer",
+            "contextBudget": {
+              "alwaysOnMaxTokens": 220,
+              "retrievalMaxUnits": 3,
+              "retrievalMaxTokens": 180
+            },
+            "decisionTrace": {
+              "traceId": "steward-trace-705b14e7-c742-44e9-9418-bda35b4e95a9",
+              "summary": "task_type=code_change;complexity=bounded;domain=repo_specific;risk=high;mode=executor_then_reviewer",
+              "steps": [
+                {
+                  "code": "TASK_TYPE",
+                  "evidence": "Make the narrowest fix in parser.js so parser.test.js passes without changing public API. Run the focused parser test before finalizing.",
+                  "effect": {
+                    "taskType": "code_change"
+                  },
+                  "reason": "Task type inferred from explicit request keywords."
+                },
+                {
+                  "code": "COMPLEXITY",
+                  "evidence": "Make the narrowest fix in parser.js so parser.test.js passes without changing public API. Run the focused parser test before finalizing.",
+                  "effect": {
+                    "complexity": "bounded"
+                  },
+                  "reason": "Complexity is inferred from task shape and ambiguity markers."
+                },
+                {
+                  "code": "DOMAIN_SPECIFICITY",
+                  "evidence": "continuation_of=null, local_context=0",
+                  "effect": {
+                    "domainSpecificity": "repo_specific"
+                  },
+                  "reason": "Domain specificity reflects continuation state and repo-local signals."
+                },
+                {
+                  "code": "RISK",
+                  "evidence": "Make the narrowest fix in parser.js so parser.test.js passes without changing public API. Run the focused parser test before finalizing.",
+                  "effect": {
+                    "risk": "high"
+                  },
+                  "reason": "Risk rises for compatibility-sensitive and externally sensitive work."
+                },
+                {
+                  "code": "EXECUTION_MODE",
+                  "evidence": "risk=high, complexity=bounded, domain=repo_specific",
+                  "effect": {
+                    "executionMode": "executor_then_reviewer"
+                  },
+                  "reason": "Execution mode follows the deterministic MVP routing matrix."
+                },
+                {
+                  "code": "CONTEXT_BUDGET",
+                  "evidence": "always_on=220, retrieval_units=3, retrieval_tokens=180",
+                  "effect": {
+                    "contextBudget": {
+                      "alwaysOnMaxTokens": 220,
+                      "retrievalMaxUnits": 3,
+                      "retrievalMaxTokens": 180
+                    }
+                  },
+                  "reason": "Context budget is determined by execution mode and sparse-context limits."
+                }
+              ]
+            }
+          },
+          "retrievalPlan": {
+            "loadLaws": true,
+            "loadProjectNotes": true,
+            "loadEpisodeSummary": false,
+            "lawQueries": [
+              "make",
+              "the",
+              "narrowest",
+              "fix",
+              "in",
+              "parser",
+              "js",
+              "so",
+              "test",
+              "passes",
+              "without",
+              "changing",
+              "public",
+              "api",
+              "run",
+              "focused",
+              "before",
+              "finalizing"
+            ],
+            "projectQueries": [
+              "make",
+              "the",
+              "narrowest",
+              "fix",
+              "in",
+              "parser",
+              "js",
+              "so",
+              "test",
+              "passes",
+              "without",
+              "changing",
+              "public",
+              "api",
+              "run",
+              "focused",
+              "before",
+              "finalizing"
+            ],
+            "episodeQueries": [],
+            "maxUnits": 3,
+            "maxTokens": 180,
+            "noLoad": false,
+            "gateTrace": {
+              "traceId": "steward-trace-705b14e7-c742-44e9-9418-bda35b4e95a9",
+              "summary": "LAW_GATE; PROJECT_NOTE_GATE",
+              "steps": [
+                {
+                  "code": "LAW_GATE",
+                  "evidence": "Task risk, review mode, or explicit compatibility constraint triggered law retrieval.",
+                  "effect": {
+                    "loadLaws": true
+                  },
+                  "reason": "Laws help enforce bounded behavior and review priorities."
+                },
+                {
+                  "code": "PROJECT_NOTE_GATE",
+                  "evidence": "Repo-specific task or local context is present.",
+                  "effect": {
+                    "loadProjectNotes": true
+                  },
+                  "reason": "Project notes may capture sensitive local conventions."
+                }
+              ]
+            }
+          },
+          "noLoad": false,
+          "promptInflationIndicators": {
+            "systemPromptChars": 4225,
+            "projectContextChars": 0,
+            "injectedWorkspaceFilesCount": 0,
+            "injectedWorkspaceChars": 0,
+            "skillsPromptChars": 0,
+            "observedContainsStewardKernel": true,
+            "observedContainsAgentsMd": false,
+            "observedContainsProjectContext": false,
+            "observedContainsRetrievedSnippets": true,
+            "modelBoundaryCallCount": 4
+          },
+          "modelBoundaryTools": [
+            "read",
+            "edit",
+            "exec"
+          ],
+          "actualToolCalls": [
+            "exec",
+            "edit"
+          ],
+          "outputQuality": "I updated `parseCsvLine` with the smallest possible change that satisfies the test while preserving the public API:\n\n```js\nexport function parseCsvLine(input) {\n  return input.split(\",\").map((field) => field.trim());\n}\n```\n\n- The function still takes a single `input` string and returns an array of strings.\n- Each field is now trimmed of leading and trailing whitespace.\n- No additional CSV semantics (like quoted-field handling) were added.\n\nThe focused test `node --test parser.test.js` now passes.",
+          "contextStayedBounded": true,
+          "persistedArtifactsLocation": {
+            "contextEngineRun": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace/.steward/context-engine/runs/live-multiturn-native-turn-3.json",
+            "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/session.jsonl",
+            "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace"
+          },
+          "continuityArtifacts": {
+            "compactArtifactPath": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace/.steward/context-engine/compacts/steward-run-1dc19dac-e8ff-4f77-98e1-28bada9169cc.json",
+            "compactEventTypes": [
+              "task_received",
+              "route_decided",
+              "gate_decided",
+              "retrieval_executed",
+              "prompt_built",
+              "tool_profile_built",
+              "run_completed"
+            ],
+            "compactRetrievedUnitIds": [
+              "pn_001",
+              "pn_002",
+              "law_002"
+            ],
+            "activeContextLocalContextRefs": [],
+            "activeContextRetrievedUnitIds": [
+              "pn_001",
+              "pn_002",
+              "law_002"
+            ],
+            "omittedReasons": [
+              "full_transcript_not_loaded",
+              "host_workspace_inflation_not_loaded",
+              "host_skills_prompt_not_loaded"
+            ],
+            "boundednessReasons": [
+              "no_host_workspace_inflation",
+              "no_host_skills_prompt",
+              "always_on_within_budget",
+              "retrieval_within_budget"
+            ],
+            "stayedBoundedByCompact": true,
+            "promptPackageTokens": 194,
+            "retrievedUnitIds": [
+              "pn_001",
+              "pn_002",
+              "law_002"
+            ]
+          }
+        },
+        {
+          "turn": 4,
+          "label": "multiturn-native:turn-4",
+          "prompt": "Verify in two bullets what changed in parser.js and whether parser.test.js now passes. Do not make further edits.",
+          "stewardContextEngineModeActive": true,
+          "routePlan": {
+            "taskType": "review",
+            "complexity": "multi_step",
+            "risk": "medium",
+            "domainSpecificity": "repo_specific",
+            "executionMode": "reviewer",
+            "contextBudget": {
+              "alwaysOnMaxTokens": 200,
+              "retrievalMaxUnits": 2,
+              "retrievalMaxTokens": 140
+            },
+            "decisionTrace": {
+              "traceId": "steward-trace-c88f1a12-0695-4897-af49-8bd3aa0bdf25",
+              "summary": "task_type=review;complexity=multi_step;domain=repo_specific;risk=medium;mode=reviewer",
+              "steps": [
+                {
+                  "code": "TASK_TYPE",
+                  "evidence": "Verify in two bullets what changed in parser.js and whether parser.test.js now passes. Do not make further edits.",
+                  "effect": {
+                    "taskType": "review"
+                  },
+                  "reason": "Task type inferred from explicit request keywords."
+                },
+                {
+                  "code": "COMPLEXITY",
+                  "evidence": "Verify in two bullets what changed in parser.js and whether parser.test.js now passes. Do not make further edits.",
+                  "effect": {
+                    "complexity": "multi_step"
+                  },
+                  "reason": "Complexity is inferred from task shape and ambiguity markers."
+                },
+                {
+                  "code": "DOMAIN_SPECIFICITY",
+                  "evidence": "continuation_of=null, local_context=0",
+                  "effect": {
+                    "domainSpecificity": "repo_specific"
+                  },
+                  "reason": "Domain specificity reflects continuation state and repo-local signals."
+                },
+                {
+                  "code": "RISK",
+                  "evidence": "Verify in two bullets what changed in parser.js and whether parser.test.js now passes. Do not make further edits.",
+                  "effect": {
+                    "risk": "medium"
+                  },
+                  "reason": "Risk rises for compatibility-sensitive and externally sensitive work."
+                },
+                {
+                  "code": "EXECUTION_MODE",
+                  "evidence": "risk=medium, complexity=multi_step, domain=repo_specific",
+                  "effect": {
+                    "executionMode": "reviewer"
+                  },
+                  "reason": "Execution mode follows the deterministic MVP routing matrix."
+                },
+                {
+                  "code": "CONTEXT_BUDGET",
+                  "evidence": "always_on=200, retrieval_units=2, retrieval_tokens=140",
+                  "effect": {
+                    "contextBudget": {
+                      "alwaysOnMaxTokens": 200,
+                      "retrievalMaxUnits": 2,
+                      "retrievalMaxTokens": 140
+                    }
+                  },
+                  "reason": "Context budget is determined by execution mode and sparse-context limits."
+                }
+              ]
+            }
+          },
+          "retrievalPlan": {
+            "loadLaws": true,
+            "loadProjectNotes": true,
+            "loadEpisodeSummary": false,
+            "lawQueries": [
+              "verify",
+              "in",
+              "two",
+              "bullets",
+              "what",
+              "changed",
+              "parser",
+              "js",
+              "and",
+              "whether",
+              "test",
+              "now",
+              "passes",
+              "do",
+              "not",
+              "make",
+              "further",
+              "edits"
+            ],
+            "projectQueries": [
+              "verify",
+              "in",
+              "two",
+              "bullets",
+              "what",
+              "changed",
+              "parser",
+              "js",
+              "and",
+              "whether",
+              "test",
+              "now",
+              "passes",
+              "do",
+              "not",
+              "make",
+              "further",
+              "edits"
+            ],
+            "episodeQueries": [],
+            "maxUnits": 2,
+            "maxTokens": 140,
+            "noLoad": false,
+            "gateTrace": {
+              "traceId": "steward-trace-c88f1a12-0695-4897-af49-8bd3aa0bdf25",
+              "summary": "LAW_GATE; PROJECT_NOTE_GATE",
+              "steps": [
+                {
+                  "code": "LAW_GATE",
+                  "evidence": "Task risk, review mode, or explicit compatibility constraint triggered law retrieval.",
+                  "effect": {
+                    "loadLaws": true
+                  },
+                  "reason": "Laws help enforce bounded behavior and review priorities."
+                },
+                {
+                  "code": "PROJECT_NOTE_GATE",
+                  "evidence": "Repo-specific task or local context is present.",
+                  "effect": {
+                    "loadProjectNotes": true
+                  },
+                  "reason": "Project notes may capture sensitive local conventions."
+                }
+              ]
+            }
+          },
+          "noLoad": false,
+          "promptInflationIndicators": {
+            "systemPromptChars": 4095,
+            "projectContextChars": 0,
+            "injectedWorkspaceFilesCount": 0,
+            "injectedWorkspaceChars": 0,
+            "skillsPromptChars": 0,
+            "observedContainsStewardKernel": true,
+            "observedContainsAgentsMd": false,
+            "observedContainsProjectContext": false,
+            "observedContainsRetrievedSnippets": true,
+            "modelBoundaryCallCount": 1
+          },
+          "modelBoundaryTools": [
+            "read",
+            "exec"
+          ],
+          "actualToolCalls": [],
+          "outputQuality": "- `parser.js` change: `parseCsvLine` now trims whitespace from each comma-separated field, changing from `input.split(\",\")` to `input.split(\",\").map((field) => field.trim())`, without altering the function’s public signature or return type.  \n- `parser.test.js` status: the focused test `node --test parser.test.js` now passes successfully (1 test, 1 pass, 0 fail).",
+          "contextStayedBounded": true,
+          "persistedArtifactsLocation": {
+            "contextEngineRun": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace/.steward/context-engine/runs/live-multiturn-native-turn-4.json",
+            "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/session.jsonl",
+            "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace"
+          },
+          "continuityArtifacts": {
+            "compactArtifactPath": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace/.steward/context-engine/compacts/steward-run-768f1a40-edfd-4720-bd47-5027ed10ba46.json",
+            "compactEventTypes": [
+              "task_received",
+              "route_decided",
+              "gate_decided",
+              "retrieval_executed",
+              "prompt_built",
+              "tool_profile_built",
+              "run_completed"
+            ],
+            "compactRetrievedUnitIds": [
+              "law_002",
+              "pn_001"
+            ],
+            "activeContextLocalContextRefs": [],
+            "activeContextRetrievedUnitIds": [
+              "law_002",
+              "pn_001"
+            ],
+            "omittedReasons": [
+              "full_transcript_not_loaded",
+              "host_workspace_inflation_not_loaded",
+              "host_skills_prompt_not_loaded"
+            ],
+            "boundednessReasons": [
+              "no_host_workspace_inflation",
+              "no_host_skills_prompt",
+              "always_on_within_budget",
+              "retrieval_within_budget"
+            ],
+            "stayedBoundedByCompact": true,
+            "promptPackageTokens": 179,
+            "retrievedUnitIds": [
+              "law_002",
+              "pn_001"
+            ]
+          }
+        }
+      ],
+      "sessionLevel": {
+        "contextEngineArtifactsProduced": true,
+        "activeContextStayedBounded": true,
+        "silentPromptGrowthDetected": false,
+        "systemPromptCharsByTurn": [
+          3566,
+          4170,
+          4225,
+          4095
+        ],
+        "promptPackageTokensByTurn": [
+          97,
+          189,
+          194,
+          179
+        ],
+        "finalParserTest": {
+          "exitCode": 0,
+          "stdout": "✔ parseCsvLine trims whitespace without changing public API (0.9595ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 59.769208",
+          "stderr": ""
+        },
+        "workspaceDir": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/workspace",
+        "sessionFile": "/var/folders/yj/7htkqzsj22qgq9ch0tfjt6k80000gn/T/steward-native-multiturn-Y6PNXi/multiturn-native-mWZWt8/session.jsonl"
+      }
+    }
+  ],
+  "summary": {
+    "totalRuns": 2,
+    "validProductResults": 2,
+    "externallyBlockedRuns": 0,
+    "providerConnections": 0,
+    "providerTimeouts": 0,
+    "authFailures": 0,
+    "harnessFailures": 0,
+    "runtimeFailures": 0
+  },
+  "workflowFailure": null
+}

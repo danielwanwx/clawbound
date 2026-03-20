@@ -1,0 +1,14 @@
+{
+  "id": "law_001",
+  "type": "law",
+  "scope": "global",
+  "applicability": "bounded code changes",
+  "content": "Preserve external behavior unless explicitly asked otherwise.",
+  "confidence": 0.9,
+  "priority": 0.95,
+  "token_estimate": 18,
+  "source_ref": "seed:law_001",
+  "last_validated_at": "2026-03-14T00:00:00Z",
+  "tags": ["compatibility", "scope"],
+  "enabled": true
+}

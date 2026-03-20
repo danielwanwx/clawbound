@@ -81,3 +81,9 @@ USER.md
 .agent/*.json
 !.agent/workflows/
 local/
+
+# ClawBound autoresearch scratch outputs
+clawbound-autoresearch-results.tsv
+
+# npm lockfile (project uses pnpm)
+package-lock.json

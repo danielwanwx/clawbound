@@ -1,0 +1,14 @@
+{
+  "id": "pn_002",
+  "type": "project_note",
+  "scope": "workflow",
+  "applicability": "test fixes",
+  "content": "Test fixes should avoid changing production APIs when possible.",
+  "confidence": 0.8,
+  "priority": 0.75,
+  "token_estimate": 15,
+  "source_ref": "seed:pn_002",
+  "last_validated_at": "2026-03-14T00:00:00Z",
+  "tags": ["tests", "api"],
+  "enabled": true
+}

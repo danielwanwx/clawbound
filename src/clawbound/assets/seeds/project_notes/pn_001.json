@@ -1,0 +1,14 @@
+{
+  "id": "pn_001",
+  "type": "project_note",
+  "scope": "module",
+  "applicability": "parser-related changes",
+  "content": "Parser-related modules try to preserve public method signatures.",
+  "confidence": 0.8,
+  "priority": 0.8,
+  "token_estimate": 16,
+  "source_ref": "seed:pn_001",
+  "last_validated_at": "2026-03-14T00:00:00Z",
+  "tags": ["parser", "api"],
+  "enabled": true
+}
