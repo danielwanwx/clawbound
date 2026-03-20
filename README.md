@@ -6,6 +6,12 @@ ClawBound exists to prove a narrow idea: the host runtime, not the model, should
 
 This is a **research preview**, not a general agent platform, not a developer preview, and not a production-ready product.
 
+## Runtime architecture
+
+![ClawBound Runtime Architecture](docs/assets/clawbound-runtime-architecture.svg)
+
+The diagram above shows the full runtime pipeline. Every run passes through nine stages, from task input to shadow snapshot. Each stage produces an inspectable artifact. Retrieval gating can produce a no-load outcome (no retrieval context sent to the model). Tool profiles are bounded per execution mode. The event trace spans all stages and is persisted alongside the shadow snapshot.
+
 ## What ClawBound does
 
 - **Bounded prompt assembly.** The runtime owns final context composition. The model receives a task-shaped prompt, not an unbounded context dump.
