@@ -18,57 +18,59 @@ pip install clawbound
 
 ### Pipeline Overview
 
-Every request flows through a deterministic 6-stage pipeline:
+Every request flows through a deterministic **4-stage core pipeline** inside `run_orchestrator()`, wrapped by the **Engine** which manages session continuity and timing:
 
 ```
-User Message
-  │
-  ▼
-┌─────────────────┐     Keyword-based classification
-│  TaskCompiler    │──→  TaskSpec { type, complexity, risk, domain, mode }
-└─────────────────┘
-  │
-  ▼
-┌─────────────────┐     Policy derivation from TaskSpec
-│  PolicyEngine   │──→  RuntimePolicy { budget, tools, iterations, scope }
-└─────────────────┘
-  │
-  ▼
-┌─────────────────┐     Budget-aware segment admission + rendering
-│  PromptBuilder  │──→  PromptEnvelope { system_prompt, segments[], stats }
-└─────────────────┘
-  │
-  ▼
-┌─────────────────┐     Async model interaction loop
-│  ExecutionLoop  │──→  LoopResult { content, tool_results, signals, events }
-│  ├─ ActionGate  │     (gate → broker → signal per tool call)
-│  ├─ ToolBroker  │
-│  └─ SignalProc  │
-└─────────────────┘
-  │
-  ▼
-┌─────────────────┐     Multi-turn memory with deterministic compaction
-│  SessionStore   │──→  SessionSnapshot { turns, bounds, compacted_summary }
-└─────────────────┘
-  │
-  ▼
-┌─────────────────┐
-│  EngineResponse │──→  { content, run_id, diagnostics, duration_ms }
-└─────────────────┘
+┌─ ClawBoundEngine ─────────────────────────────────────────────────────────┐
+│                                                                           │
+│   ① Read session history (if session_id provided)                         │
+│        ↓                                              ┌───────────────┐   │
+│   ┌─ run_orchestrator() ──────────────────────┐       │ SessionStore  │   │
+│   │                                           │  ←──  │ (side-channel)│   │
+│   │  ┌─────────────┐     Keyword classification│      │               │   │
+│   │  │ TaskCompiler │──→ TaskSpec              │      │ read history  │   │
+│   │  └─────────────┘                          │      │ before,       │   │
+│   │        │                                  │      │ write turn    │   │
+│   │        ▼                                  │      │ after         │   │
+│   │  ┌─────────────┐     Policy derivation    │      └───────────────┘   │
+│   │  │ PolicyEngine│──→ RuntimePolicy         │                          │
+│   │  └─────────────┘                          │                          │
+│   │        │                                  │                          │
+│   │        ▼                                  │                          │
+│   │  ┌──────────────┐    Budget-aware prompt  │                          │
+│   │  │ PromptBuilder│──→ PromptEnvelope       │                          │
+│   │  └──────────────┘                         │                          │
+│   │        │                                  │                          │
+│   │        ▼                                  │                          │
+│   │  ┌──────────────┐    Async model loop     │    ┌──────────────────┐  │
+│   │  │ExecutionLoop │◄──────────────────────────►  │ Provider Adapter │  │
+│   │  │ ├─ ActionGate│    (per iteration)      │    │ (Anthropic,      │  │
+│   │  │ ├─ ToolBroker│                         │    │  Gemini, MiniMax)│  │
+│   │  │ └─ SignalProc│──→ LoopResult           │    └──────────────────┘  │
+│   │  └──────────────┘                         │                          │
+│   └───────────────────────────────────────────┘                          │
+│        ↓                                                                  │
+│   ③ Write turn to session (if session_id provided)                        │
+│        ↓                                                                  │
+│   EngineResponse { content, run_id, diagnostics, duration_ms }            │
+└───────────────────────────────────────────────────────────────────────────┘
 ```
+
+**Key insight:** SessionStore is *not* a pipeline stage — it's a **side-channel**. The Engine reads session history before the pipeline runs and writes the new turn after it completes. The 4-stage core pipeline (`TaskCompiler → PolicyEngine → PromptBuilder → ExecutionLoop`) produces the final content. The Engine wraps this with session management and timing.
 
 ### Module Responsibilities
 
-| Module | Input | Output | Key Property |
-|--------|-------|--------|-------------|
-| **TaskCompiler** | raw user text | `TaskSpec` | Deterministic keyword routing — no LLM |
-| **PolicyEngine** | `TaskSpec` + config | `RuntimePolicy` | Budget/permission matrix per execution mode |
-| **PromptBuilder** | policy + kernel + context | `PromptEnvelope` | Budget-aware: segments admitted, trimmed, or rejected |
-| **ExecutionLoop** | envelope + adapter | `LoopResult` | Owns turn-state, retries, iteration limits |
-| **ActionGate** | tool call + policy | allow / deny | Pre-execution risk filter |
-| **ToolBroker** | tool params | `ToolResult` | Registry + authorization + typed execution |
-| **SignalProcessor** | `ToolResult` | `SignalBundle` | Deterministic compression — no LLM (guardrail #3) |
-| **SessionStore** | turns | `SessionSnapshot` | Deterministic compaction — no LLM (guardrail #5) |
+| Module | Role | Input → Output | Key Property |
+|--------|------|---------------|-------------|
+| **Engine** | Outer shell | `EngineRequest` → `EngineResponse` | Session lifecycle + timing + run_id |
+| **TaskCompiler** | Stage 1 | raw user text → `TaskSpec` | Deterministic keyword routing — no LLM |
+| **PolicyEngine** | Stage 2 | `TaskSpec` + config → `RuntimePolicy` | Budget/permission matrix per execution mode |
+| **PromptBuilder** | Stage 3 | policy + kernel + context → `PromptEnvelope` | Budget-aware: segments admitted, trimmed, or rejected |
+| **ExecutionLoop** | Stage 4 (core) | envelope + adapter → `LoopResult` | Owns turn-state, retries, iteration limits |
+| **ActionGate** | Inside Stage 4 | tool call + policy → allow / deny | Pre-execution risk filter |
+| **ToolBroker** | Inside Stage 4 | tool params → `ToolResult` | Registry + authorization + typed execution |
+| **SignalProcessor** | Inside Stage 4 | `ToolResult` → `SignalBundle` | Deterministic compression — no LLM (guardrail #3) |
+| **SessionStore** | Side-channel | turns → `SessionSnapshot` | Deterministic compaction — no LLM (guardrail #5) |
 
 ### Provider Adapters
 
