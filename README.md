@@ -16,80 +16,35 @@ pip install clawbound
   <img src="docs/architecture.svg" alt="ClawBound Architecture" width="800" />
 </p>
 
-### Pipeline Overview
+Every request flows through a **4-stage deterministic pipeline**. The Engine wraps this pipeline with session management (read history before, write turn after). SessionStore is a side-channel, not a pipeline stage.
 
-Every request flows through a deterministic **4-stage core pipeline** inside `run_orchestrator()`, wrapped by the **Engine** which manages session continuity and timing:
+| Stage | Module | What It Does |
+|-------|--------|-------------|
+| 1 | **TaskCompiler** | Classifies user input → `TaskSpec` (type, complexity, risk). Keyword matching, no LLM. |
+| 2 | **PolicyEngine** | Derives execution constraints → `RuntimePolicy` (token budget, allowed tools, iteration limits). |
+| 3 | **PromptBuilder** | Assembles system prompt from segments. Each segment is admitted, trimmed, or rejected by budget. |
+| 4 | **ExecutionLoop** | Calls the LLM, handles tool calls (gate → broker → signal), iterates until `FinalAnswer` or limit. |
+| — | **SessionStore** | Side-channel: reads conversation history before the pipeline, writes the new turn after. |
 
-```
-┌─ ClawBoundEngine ─────────────────────────────────────────────────────────┐
-│                                                                           │
-│   ① Read session history (if session_id provided)                         │
-│        ↓                                              ┌───────────────┐   │
-│   ┌─ run_orchestrator() ──────────────────────┐       │ SessionStore  │   │
-│   │                                           │  ←──  │ (side-channel)│   │
-│   │  ┌─────────────┐     Keyword classification│      │               │   │
-│   │  │ TaskCompiler │──→ TaskSpec              │      │ read history  │   │
-│   │  └─────────────┘                          │      │ before,       │   │
-│   │        │                                  │      │ write turn    │   │
-│   │        ▼                                  │      │ after         │   │
-│   │  ┌─────────────┐     Policy derivation    │      └───────────────┘   │
-│   │  │ PolicyEngine│──→ RuntimePolicy         │                          │
-│   │  └─────────────┘                          │                          │
-│   │        │                                  │                          │
-│   │        ▼                                  │                          │
-│   │  ┌──────────────┐    Budget-aware prompt  │                          │
-│   │  │ PromptBuilder│──→ PromptEnvelope       │                          │
-│   │  └──────────────┘                         │                          │
-│   │        │                                  │                          │
-│   │        ▼                                  │                          │
-│   │  ┌──────────────┐    Async model loop     │    ┌──────────────────┐  │
-│   │  │ExecutionLoop │◄──────────────────────────►  │ Provider Adapter │  │
-│   │  │ ├─ ActionGate│    (per iteration)      │    │ (Anthropic,      │  │
-│   │  │ ├─ ToolBroker│                         │    │  Gemini, MiniMax)│  │
-│   │  │ └─ SignalProc│──→ LoopResult           │    └──────────────────┘  │
-│   │  └──────────────┘                         │                          │
-│   └───────────────────────────────────────────┘                          │
-│        ↓                                                                  │
-│   ③ Write turn to session (if session_id provided)                        │
-│        ↓                                                                  │
-│   EngineResponse { content, run_id, diagnostics, duration_ms }            │
-└───────────────────────────────────────────────────────────────────────────┘
-```
+---
 
-**Key insight:** SessionStore is *not* a pipeline stage — it's a **side-channel**. The Engine reads session history before the pipeline runs and writes the new turn after it completes. The 4-stage core pipeline (`TaskCompiler → PolicyEngine → PromptBuilder → ExecutionLoop`) produces the final content. The Engine wraps this with session management and timing.
+## How It Works
 
-### Module Responsibilities
+<p align="center">
+  <img src="docs/use-case-flow.svg" alt="Use Case Flow" width="800" />
+</p>
 
-| Module | Role | Input → Output | Key Property |
-|--------|------|---------------|-------------|
-| **Engine** | Outer shell | `EngineRequest` → `EngineResponse` | Session lifecycle + timing + run_id |
-| **TaskCompiler** | Stage 1 | raw user text → `TaskSpec` | Deterministic keyword routing — no LLM |
-| **PolicyEngine** | Stage 2 | `TaskSpec` + config → `RuntimePolicy` | Budget/permission matrix per execution mode |
-| **PromptBuilder** | Stage 3 | policy + kernel + context → `PromptEnvelope` | Budget-aware: segments admitted, trimmed, or rejected |
-| **ExecutionLoop** | Stage 4 (core) | envelope + adapter → `LoopResult` | Owns turn-state, retries, iteration limits |
-| **ActionGate** | Inside Stage 4 | tool call + policy → allow / deny | Pre-execution risk filter |
-| **ToolBroker** | Inside Stage 4 | tool params → `ToolResult` | Registry + authorization + typed execution |
-| **SignalProcessor** | Inside Stage 4 | `ToolResult` → `SignalBundle` | Deterministic compression — no LLM (guardrail #3) |
-| **SessionStore** | Side-channel | turns → `SessionSnapshot` | Deterministic compaction — no LLM (guardrail #5) |
+The diagram above shows a real request flowing through every stage — with actual data at each step. This is what ClawBound does: it classifies the task, derives safe execution boundaries, builds a budget-aware prompt, then runs a tool-calling loop with the LLM provider.
 
 ### Provider Adapters
 
-ClawBound supports multiple LLM providers through thin translation layers:
+| Provider | Endpoint | Auth |
+|----------|----------|------|
+| **Anthropic** | Native Messages API (`api.anthropic.com`) | `ANTHROPIC_API_KEY` |
+| **Google Gemini** | OpenAI-compatible (`generativelanguage.googleapis.com`) | `GEMINI_API_KEY` |
+| **MiniMax** | OpenAI-compatible (`api.minimax.io` / `api.minimaxi.com` CN) | `MINIMAX_API_KEY` |
 
-| Provider | Adapter | Endpoint | Auth |
-|----------|---------|----------|------|
-| **Anthropic** | Native Messages API | `api.anthropic.com` | `ANTHROPIC_API_KEY` |
-| **Google Gemini** | OpenAI-compatible | `generativelanguage.googleapis.com` | `GEMINI_API_KEY` |
-| **MiniMax** | OpenAI-compatible | `api.minimax.io` / `api.minimaxi.com` (CN) | `MINIMAX_API_KEY` |
-
-Provider can be overridden at runtime via environment variables:
-
-```bash
-export CLAWBOUND_PROVIDER=google
-export CLAWBOUND_MODEL=gemini-2.5-flash
-```
-
-When `CLAWBOUND_PROVIDER` is set, host-provided API keys are ignored (key isolation).
+Providers are swappable at runtime: `CLAWBOUND_PROVIDER=google CLAWBOUND_MODEL=gemini-2.5-flash`
 
 ---
 

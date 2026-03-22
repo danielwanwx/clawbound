@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 740" font-family="'Segoe UI', -apple-system, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="740" rx="12" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="450" y="34" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">How ClawBound Works</text>
+  <text x="450" y="52" text-anchor="middle" fill="#64748b" font-size="12">A concrete request flowing through every stage</text>
+
+  <!-- ==================== USER INPUT ==================== -->
+  <rect x="140" y="68" width="620" height="40" rx="20" fill="#334155" stroke="#64748b" stroke-width="1"/>
+  <text x="168" y="84" fill="#94a3b8" font-size="10" font-weight="600">USER</text>
+  <text x="168" y="100" fill="#e2e8f0" font-size="13" font-style="italic">"Read config.json and tell me the version"</text>
+
+  <!-- Arrow -->
+  <line x1="450" y1="108" x2="450" y2="122" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="450,128 445,122 455,122" fill="#475569"/>
+
+  <!-- ==================== STAGE 1: TaskCompiler ==================== -->
+  <rect x="60" y="130" width="780" height="72" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.2"/>
+  <rect x="60" y="130" width="780" height="24" rx="8" fill="#1e3a5f"/>
+  <rect x="60" y="146" width="780" height="8" fill="#1e3a5f"/>
+  <text x="78" y="147" fill="#60a5fa" font-size="11" font-weight="700">STAGE 1 — TaskCompiler</text>
+  <text x="380" y="147" fill="#475569" font-size="10">keyword matching, no LLM</text>
+
+  <!-- Output fields -->
+  <text x="78" y="174" fill="#94a3b8" font-size="11">task_type =</text>
+  <text x="152" y="174" fill="#60a5fa" font-size="11" font-weight="600">answer</text>
+  <text x="220" y="174" fill="#94a3b8" font-size="11">complexity =</text>
+  <text x="306" y="174" fill="#60a5fa" font-size="11" font-weight="600">bounded</text>
+  <text x="380" y="174" fill="#94a3b8" font-size="11">risk =</text>
+  <text x="414" y="174" fill="#60a5fa" font-size="11" font-weight="600">low</text>
+  <text x="462" y="174" fill="#94a3b8" font-size="11">target =</text>
+  <text x="510" y="174" fill="#60a5fa" font-size="11" font-weight="600">["config.json"]</text>
+
+  <text x="78" y="194" fill="#94a3b8" font-size="11">execution_mode =</text>
+  <text x="200" y="194" fill="#60a5fa" font-size="11" font-weight="600">answer</text>
+  <text x="270" y="194" fill="#94a3b8" font-size="11">side_effect_intent =</text>
+  <text x="406" y="194" fill="#60a5fa" font-size="11" font-weight="600">none</text>
+  <text x="460" y="194" fill="#475569" font-size="10" font-style="italic">← "read" verb = no side effects</text>
+
+  <!-- Arrow -->
+  <line x1="450" y1="202" x2="450" y2="216" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="450,222 445,216 455,216" fill="#475569"/>
+
+  <!-- ==================== STAGE 2: PolicyEngine ==================== -->
+  <rect x="60" y="224" width="780" height="72" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.2"/>
+  <rect x="60" y="224" width="780" height="24" rx="8" fill="#2e1065"/>
+  <rect x="60" y="240" width="780" height="8" fill="#2e1065"/>
+  <text x="78" y="241" fill="#a78bfa" font-size="11" font-weight="700">STAGE 2 — PolicyEngine</text>
+  <text x="380" y="241" fill="#475569" font-size="10">maps TaskSpec → execution constraints</text>
+
+  <text x="78" y="268" fill="#94a3b8" font-size="11">context_budget =</text>
+  <text x="182" y="268" fill="#a78bfa" font-size="11" font-weight="600">4,000 tokens</text>
+  <text x="300" y="268" fill="#94a3b8" font-size="11">max_turns =</text>
+  <text x="380" y="268" fill="#a78bfa" font-size="11" font-weight="600">5</text>
+  <text x="420" y="268" fill="#94a3b8" font-size="11">max_tool_calls =</text>
+  <text x="540" y="268" fill="#a78bfa" font-size="11" font-weight="600">3 per turn</text>
+
+  <text x="78" y="288" fill="#94a3b8" font-size="11">allowed_tools =</text>
+  <text x="182" y="288" fill="#a78bfa" font-size="11" font-weight="600">["read_file"]</text>
+  <text x="310" y="288" fill="#94a3b8" font-size="11">denied_tools =</text>
+  <text x="404" y="288" fill="#a78bfa" font-size="11" font-weight="600">["delete_file", "exec"]</text>
+  <text x="588" y="288" fill="#475569" font-size="10" font-style="italic">← bounded by answer + low risk</text>
+
+  <!-- Arrow -->
+  <line x1="450" y1="296" x2="450" y2="310" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="450,316 445,310 455,310" fill="#475569"/>
+
+  <!-- ==================== STAGE 3: PromptBuilder ==================== -->
+  <rect x="60" y="318" width="780" height="72" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="1.2"/>
+  <rect x="60" y="318" width="780" height="24" rx="8" fill="#0c4a6e"/>
+  <rect x="60" y="334" width="780" height="8" fill="#0c4a6e"/>
+  <text x="78" y="335" fill="#22d3ee" font-size="11" font-weight="700">STAGE 3 — PromptBuilder</text>
+  <text x="380" y="335" fill="#475569" font-size="10">budget-aware segment admission</text>
+
+  <!-- Segments as chips -->
+  <rect x="78" y="348" width="108" height="20" rx="4" fill="#064e3b" stroke="#34d399" stroke-width="0.8"/>
+  <text x="84" y="362" fill="#6ee7b7" font-size="10">✓ Kernel (480t)</text>
+  <rect x="194" y="348" width="134" height="20" rx="4" fill="#064e3b" stroke="#34d399" stroke-width="0.8"/>
+  <text x="200" y="362" fill="#6ee7b7" font-size="10">✓ Answer Mode (320t)</text>
+  <rect x="336" y="348" width="120" height="20" rx="4" fill="#064e3b" stroke="#34d399" stroke-width="0.8"/>
+  <text x="342" y="362" fill="#6ee7b7" font-size="10">✓ Task Brief (90t)</text>
+  <rect x="464" y="348" width="140" height="20" rx="4" fill="#064e3b" stroke="#34d399" stroke-width="0.8"/>
+  <text x="470" y="362" fill="#6ee7b7" font-size="10">✓ Tool Contract (210t)</text>
+
+  <text x="78" y="384" fill="#94a3b8" font-size="11">Total: 1,100 / 4,000 tokens used</text>
+  <text x="330" y="384" fill="#475569" font-size="10" font-style="italic">← all segments admitted (budget not exhausted)</text>
+
+  <!-- Arrow -->
+  <line x1="450" y1="390" x2="450" y2="404" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="450,410 445,404 455,404" fill="#475569"/>
+
+  <!-- ==================== STAGE 4: ExecutionLoop ==================== -->
+  <rect x="60" y="412" width="780" height="238" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="1.8"/>
+  <rect x="60" y="412" width="780" height="24" rx="8" fill="#064e3b"/>
+  <rect x="60" y="428" width="780" height="8" fill="#064e3b"/>
+  <text x="78" y="429" fill="#6ee7b7" font-size="11" font-weight="700">STAGE 4 — ExecutionLoop</text>
+  <text x="380" y="429" fill="#475569" font-size="10">iterates model ↔ tools until FinalAnswer or limit</text>
+
+  <!-- Turn 1 -->
+  <rect x="78" y="444" width="744" height="96" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="94" y="462" fill="#475569" font-size="10" font-weight="700">TURN 1</text>
+
+  <!-- Model response -->
+  <text x="94" y="480" fill="#94a3b8" font-size="11">Model →</text>
+  <text x="150" y="480" fill="#f97316" font-size="11" font-weight="600">ToolCalls</text>
+  <text x="220" y="480" fill="#e2e8f0" font-size="11">[ read_file( path="config.json" ) ]</text>
+
+  <!-- Gate + Broker + Signal -->
+  <text x="94" y="500" fill="#94a3b8" font-size="11">ActionGate:</text>
+  <text x="170" y="500" fill="#34d399" font-size="11" font-weight="600">✓ allow</text>
+  <text x="224" y="500" fill="#64748b" font-size="10">(read_only tool, policy allows it)</text>
+
+  <text x="94" y="518" fill="#94a3b8" font-size="11">ToolBroker executes →</text>
+  <text x="242" y="518" fill="#e2e8f0" font-size="11">{"version": "1.2.3", "name": "my-app", ...}</text>
+
+  <text x="94" y="536" fill="#94a3b8" font-size="11">SignalProc compresses →</text>
+  <text x="258" y="536" fill="#22d3ee" font-size="11">JsonResponseSignal { keys: 4, shape: object }</text>
+
+  <!-- Turn 2 -->
+  <rect x="78" y="548" width="744" height="52" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="94" y="566" fill="#475569" font-size="10" font-weight="700">TURN 2</text>
+
+  <text x="94" y="586" fill="#94a3b8" font-size="11">Model →</text>
+  <text x="150" y="586" fill="#34d399" font-size="11" font-weight="600">FinalAnswer</text>
+  <text x="244" y="586" fill="#e2e8f0" font-size="11">"The version in config.json is 1.2.3."</text>
+
+  <!-- Termination badge -->
+  <rect x="94" y="598" width="100" height="16" rx="8" fill="#064e3b" stroke="#34d399" stroke-width="0.6"/>
+  <text x="144" y="610" text-anchor="middle" fill="#6ee7b7" font-size="9">loop terminates</text>
+
+  <!-- Provider callout -->
+  <rect x="622" y="448" width="190" height="44" rx="6" fill="#1e293b" stroke="#f97316" stroke-width="1"/>
+  <text x="717" y="466" text-anchor="middle" fill="#fb923c" font-size="10" font-weight="600">Provider: Anthropic</text>
+  <text x="717" y="482" text-anchor="middle" fill="#94a3b8" font-size="10">claude-sonnet-4-20250514</text>
+
+  <!-- Provider arrows -->
+  <line x1="620" y1="462" x2="570" y2="462" stroke="#f97316" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="620" y1="478" x2="570" y2="478" stroke="#f97316" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="594" y="458" text-anchor="middle" fill="#fdba74" font-size="8">req</text>
+  <text x="594" y="488" text-anchor="middle" fill="#fdba74" font-size="8">resp</text>
+
+  <!-- Arrow to output -->
+  <line x1="450" y1="650" x2="450" y2="666" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="450,672 445,666 455,666" fill="#475569"/>
+
+  <!-- ==================== OUTPUT ==================== -->
+  <rect x="60" y="674" width="780" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="78" y="694" fill="#475569" font-size="10" font-weight="700">ENGINE RESPONSE</text>
+
+  <text x="78" y="714" fill="#94a3b8" font-size="11">content =</text>
+  <text x="140" y="714" fill="#e2e8f0" font-size="11" font-weight="600">"The version in config.json is 1.2.3."</text>
+  <text x="500" y="714" fill="#94a3b8" font-size="11">task_type =</text>
+  <text x="570" y="714" fill="#60a5fa" font-size="11">answer</text>
+  <text x="620" y="714" fill="#94a3b8" font-size="11">duration =</text>
+  <text x="686" y="714" fill="#fbbf24" font-size="11">2,340ms</text>
+</svg>
