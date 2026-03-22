@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 920" font-family="'Segoe UI', -apple-system, system-ui, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 960" font-family="'Segoe UI', -apple-system, system-ui, sans-serif">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#0f172a"/>
@@ -55,10 +55,13 @@
     <marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/>
     </marker>
+    <marker id="arrowAmber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
+    </marker>
   </defs>
 
   <!-- Background -->
-  <rect width="1100" height="920" fill="url(#bgGrad)" rx="12"/>
+  <rect width="1100" height="960" fill="url(#bgGrad)" rx="12"/>
 
   <!-- Title -->
   <text x="550" y="42" text-anchor="middle" fill="#f8fafc" font-size="22" font-weight="700" letter-spacing="0.5">ClawBound Architecture</text>
@@ -162,108 +165,137 @@
   <text x="160" y="855" fill="#c7d2fe" font-size="11">content, run_id, diagnostics, duration_ms</text>
 
   <!-- ═══════ Right Panel: Provider Adapters ═══════ -->
-  <rect x="600" y="80" width="460" height="340" rx="16" fill="#1a1025" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <text x="830" y="110" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">PROVIDER ADAPTERS</text>
+  <!-- Positioned to align with Stage 4 ExecutionLoop -->
+  <rect x="580" y="460" width="480" height="216" rx="16" fill="#1a1025" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <text x="820" y="485" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">PROVIDER ADAPTERS</text>
+
+  <!-- Protocol (topmost — this is the interface the loop calls) -->
+  <rect x="610" y="495" width="420" height="32" rx="6" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+  <text x="820" y="516" text-anchor="middle" fill="#a5b4fc" font-size="11" font-weight="600">ModelAdapter.send(request) → ModelResponse</text>
 
   <!-- Resolver box -->
-  <rect x="630" y="125" width="400" height="50" rx="8" fill="url(#providerGrad)" opacity="0.9"/>
-  <text x="830" y="148" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">Provider Resolver</text>
-  <text x="830" y="166" text-anchor="middle" fill="#fecaca" font-size="10">CLAWBOUND_PROVIDER / CLAWBOUND_MODEL env overrides + key isolation</text>
+  <rect x="610" y="535" width="420" height="38" rx="8" fill="url(#providerGrad)" opacity="0.9"/>
+  <text x="820" y="553" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="700">Provider Resolver</text>
+  <text x="820" y="567" text-anchor="middle" fill="#fecaca" font-size="9">CLAWBOUND_PROVIDER / CLAWBOUND_MODEL env overrides · key isolation</text>
 
   <!-- Anthropic -->
-  <rect x="630" y="190" width="125" height="80" rx="8" fill="#1e293b" stroke="#f97316" stroke-width="1.2"/>
-  <text x="692" y="215" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="700">Anthropic</text>
-  <text x="692" y="232" text-anchor="middle" fill="#94a3b8" font-size="9">Messages API</text>
-  <text x="692" y="248" text-anchor="middle" fill="#64748b" font-size="9">api.anthropic.com</text>
-  <text x="692" y="262" text-anchor="middle" fill="#64748b" font-size="8">ANTHROPIC_API_KEY</text>
+  <rect x="610" y="582" width="138" height="58" rx="8" fill="#1e293b" stroke="#f97316" stroke-width="1.2"/>
+  <text x="679" y="603" text-anchor="middle" fill="#fb923c" font-size="11" font-weight="700">Anthropic</text>
+  <text x="679" y="618" text-anchor="middle" fill="#94a3b8" font-size="9">Messages API</text>
+  <text x="679" y="632" text-anchor="middle" fill="#64748b" font-size="8">api.anthropic.com</text>
 
   <!-- Gemini -->
-  <rect x="770" y="190" width="125" height="80" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.2"/>
-  <text x="832" y="215" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700">Gemini</text>
-  <text x="832" y="232" text-anchor="middle" fill="#94a3b8" font-size="9">OpenAI-compat</text>
-  <text x="832" y="248" text-anchor="middle" fill="#64748b" font-size="9">googleapis.com</text>
-  <text x="832" y="262" text-anchor="middle" fill="#64748b" font-size="8">GEMINI_API_KEY</text>
+  <rect x="757" y="582" width="138" height="58" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.2"/>
+  <text x="826" y="603" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="700">Gemini</text>
+  <text x="826" y="618" text-anchor="middle" fill="#94a3b8" font-size="9">OpenAI-compat</text>
+  <text x="826" y="632" text-anchor="middle" fill="#64748b" font-size="8">googleapis.com</text>
 
   <!-- MiniMax -->
-  <rect x="910" y="190" width="120" height="80" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.2"/>
-  <text x="970" y="215" text-anchor="middle" fill="#c084fc" font-size="12" font-weight="700">MiniMax</text>
-  <text x="970" y="232" text-anchor="middle" fill="#94a3b8" font-size="9">OpenAI-compat</text>
-  <text x="970" y="248" text-anchor="middle" fill="#64748b" font-size="9">minimax.io (CN)</text>
-  <text x="970" y="262" text-anchor="middle" fill="#64748b" font-size="8">MINIMAX_API_KEY</text>
+  <rect x="904" y="582" width="126" height="58" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.2"/>
+  <text x="967" y="603" text-anchor="middle" fill="#c084fc" font-size="11" font-weight="700">MiniMax</text>
+  <text x="967" y="618" text-anchor="middle" fill="#94a3b8" font-size="9">OpenAI-compat</text>
+  <text x="967" y="632" text-anchor="middle" fill="#64748b" font-size="8">minimax.io / CN</text>
 
-  <!-- httpx box -->
-  <rect x="680" y="290" width="280" height="35" rx="6" fill="#0f172a" stroke="#475569" stroke-width="0.8"/>
-  <text x="820" y="312" text-anchor="middle" fill="#64748b" font-size="11">httpx.AsyncClient → translate → normalize</text>
+  <!-- ═══ Bidirectional connection: ExecutionLoop ↔ Provider ═══ -->
+  <!-- Request arrow: Loop → Provider (top) -->
+  <line x1="520" y1="505" x2="607" y2="505" stroke="#22d3ee" stroke-width="2" marker-end="url(#arrowCyan)"/>
+  <rect x="530" y="492" width="66" height="14" rx="3" fill="#0f172a" stroke="none"/>
+  <text x="563" y="502" text-anchor="middle" fill="#22d3ee" font-size="9" font-weight="600">Request →</text>
 
-  <!-- Protocol -->
-  <rect x="680" y="340" width="280" height="35" rx="6" fill="#1e1b4b" stroke="#6366f1" stroke-width="0.8"/>
-  <text x="820" y="362" text-anchor="middle" fill="#a5b4fc" font-size="11" font-weight="600">ModelAdapter Protocol</text>
+  <!-- Response arrow: Provider → Loop (bottom, slightly lower) -->
+  <line x1="607" y1="521" x2="520" y2="521" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowAmber)"/>
+  <rect x="530" y="524" width="72" height="14" rx="3" fill="#0f172a" stroke="none"/>
+  <text x="566" y="534" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="600">← Response</text>
 
-  <!-- Connection line: Loop ↔ Provider -->
-  <line x1="520" y1="520" x2="600" y2="357" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#arrowCyan)"/>
-  <text x="575" y="425" fill="#22d3ee" font-size="9" transform="rotate(-32, 575, 425)">send(ModelRequest)</text>
+  <!-- Annotation: this happens inside the loop -->
+  <rect x="525" y="540" width="65" height="24" rx="4" fill="#0c4a6e" stroke="#0ea5e9" stroke-width="0.8"/>
+  <text x="557" y="556" text-anchor="middle" fill="#7dd3fc" font-size="8" font-weight="600">per iteration</text>
 
-  <!-- ═══════ Right Panel: Guardrails ═══════ -->
-  <rect x="600" y="440" width="460" height="180" rx="16" fill="#1a0f0f" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <text x="830" y="470" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">DESIGN GUARDRAILS</text>
+  <!-- ═══════ Right Top Panel: Guardrails ═══════ -->
+  <rect x="600" y="80" width="460" height="168" rx="16" fill="#1a0f0f" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <text x="830" y="108" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">DESIGN GUARDRAILS</text>
 
   <g fill="#f87171" font-size="11" font-weight="600">
-    <text x="630" y="500">#1</text>
-    <text x="630" y="525">#2</text>
-    <text x="630" y="550">#3</text>
-    <text x="630" y="575">#4</text>
-    <text x="630" y="600">#5</text>
+    <text x="630" y="134">#1</text>
+    <text x="630" y="156">#2</text>
+    <text x="630" y="178">#3</text>
+    <text x="630" y="200">#4</text>
+    <text x="630" y="222">#5</text>
   </g>
   <g fill="#e2e8f0" font-size="11">
-    <text x="660" y="500">TaskSpec ≤ 12 fields</text>
-    <text x="660" y="525">Rejected segments kept in envelope</text>
-    <text x="660" y="550">GenericSignal is fallback only</text>
-    <text x="660" y="575">Loop modules closed at 5</text>
-    <text x="660" y="600">Deterministic compaction — no LLM</text>
+    <text x="660" y="134">TaskSpec ≤ 12 fields</text>
+    <text x="660" y="156">Rejected segments kept in envelope</text>
+    <text x="660" y="178">GenericSignal is fallback only</text>
+    <text x="660" y="200">Loop modules closed at 5</text>
+    <text x="660" y="222">Deterministic compaction — no LLM</text>
   </g>
   <g fill="#64748b" font-size="9">
-    <text x="910" y="500">test assertion</text>
-    <text x="910" y="525">segments[] audit</text>
-    <text x="910" y="550">signal router</text>
-    <text x="910" y="575">interface contract</text>
-    <text x="910" y="600">string aggregation</text>
+    <text x="920" y="134">test assertion</text>
+    <text x="920" y="156">segments[] audit</text>
+    <text x="920" y="178">signal router</text>
+    <text x="920" y="200">interface contract</text>
+    <text x="920" y="222">string aggregation</text>
   </g>
 
-  <!-- ═══════ Right Panel: Data Types ═══════ -->
-  <rect x="600" y="640" width="460" height="240" rx="16" fill="#0f1720" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <text x="830" y="670" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">SIGNAL TYPES</text>
+  <!-- ═══════ Right Middle Panel: Signal Types ═══════ -->
+  <rect x="600" y="260" width="460" height="185" rx="16" fill="#0f1720" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <text x="830" y="286" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">SIGNAL TYPES</text>
 
   <!-- Signal boxes -->
-  <rect x="620" y="688" width="130" height="34" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
-  <text x="685" y="710" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">TestResults</text>
+  <rect x="620" y="300" width="130" height="30" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
+  <text x="685" y="320" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">TestResults</text>
 
-  <rect x="760" y="688" width="130" height="34" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
-  <text x="825" y="710" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">BuildOutput</text>
+  <rect x="760" y="300" width="130" height="30" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
+  <text x="825" y="320" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">BuildOutput</text>
 
-  <rect x="900" y="688" width="130" height="34" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
-  <text x="965" y="710" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">LintOutput</text>
+  <rect x="900" y="300" width="130" height="30" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
+  <text x="965" y="320" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">LintOutput</text>
 
-  <rect x="620" y="732" width="130" height="34" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
-  <text x="685" y="754" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">DirListing</text>
+  <rect x="620" y="338" width="130" height="30" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
+  <text x="685" y="358" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">DirListing</text>
 
-  <rect x="760" y="732" width="130" height="34" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
-  <text x="825" y="754" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">JsonResponse</text>
+  <rect x="760" y="338" width="130" height="30" rx="6" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
+  <text x="825" y="358" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600">JsonResponse</text>
 
-  <rect x="900" y="732" width="130" height="34" rx="6" fill="#1e293b" stroke="#f87171" stroke-width="0.8"/>
-  <text x="965" y="754" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="600">Generic ⚠</text>
+  <rect x="900" y="338" width="130" height="30" rx="6" fill="#1e293b" stroke="#f87171" stroke-width="0.8"/>
+  <text x="965" y="358" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="600">Generic ⚠</text>
 
   <!-- Compression info -->
-  <rect x="620" y="782" width="410" height="80" rx="8" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
-  <text x="825" y="805" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">Compression Pipeline</text>
-  <text x="825" y="825" text-anchor="middle" fill="#64748b" font-size="10">ToolResult → classify → structured signal → compressed text</text>
-  <text x="825" y="845" text-anchor="middle" fill="#64748b" font-size="10">Loss risk: none | low | medium | high (ratio-based assessment)</text>
+  <rect x="620" y="378" width="410" height="52" rx="8" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>
+  <text x="825" y="398" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600">Compression Pipeline</text>
+  <text x="825" y="415" text-anchor="middle" fill="#64748b" font-size="9">ToolResult → classify → structured signal → compressed text → loss risk</text>
+
+  <!-- ═══════ Right Bottom Panel: Data Flow Legend ═══════ -->
+  <rect x="580" y="690" width="480" height="180" rx="16" fill="#0f1720" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <text x="820" y="716" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">EXECUTION LOOP DETAIL</text>
+
+  <text x="610" y="740" fill="#64748b" font-size="10">Each iteration inside the ExecutionLoop:</text>
+
+  <!-- Flow diagram -->
+  <rect x="610" y="752" width="90" height="26" rx="5" fill="#1e293b" stroke="#22d3ee" stroke-width="0.8"/>
+  <text x="655" y="770" text-anchor="middle" fill="#67e8f9" font-size="9" font-weight="600">ModelReq</text>
+  <text x="710" y="770" fill="#94a3b8" font-size="9">→</text>
+  <rect x="720" y="752" width="66" height="26" rx="5" fill="#1e293b" stroke="#6366f1" stroke-width="0.8"/>
+  <text x="753" y="770" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">Provider</text>
+  <text x="795" y="770" fill="#94a3b8" font-size="9">→</text>
+  <rect x="805" y="752" width="90" height="26" rx="5" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+  <text x="850" y="770" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="600">ModelResp</text>
+
+  <!-- Branch -->
+  <text x="655" y="800" fill="#e2e8f0" font-size="10">If FinalAnswer → return result, end loop</text>
+  <text x="655" y="818" fill="#e2e8f0" font-size="10">If ToolCalls  → gate → broker → signal → next iteration</text>
+  <text x="655" y="836" fill="#e2e8f0" font-size="10">If ModelError → retry (transient) or count error</text>
+
+  <!-- Key insight callout -->
+  <rect x="610" y="845" width="420" height="20" rx="4" fill="#1e1b4b" stroke="#6366f1" stroke-width="0.6"/>
+  <text x="820" y="859" text-anchor="middle" fill="#a5b4fc" font-size="9">Provider is called FROM WITHIN ExecutionLoop — not a pipeline stage output</text>
 
   <!-- Stats bar -->
-  <rect x="60" y="895" width="980" height="1" fill="#334155"/>
-  <text x="100" y="912" fill="#475569" font-size="10">31 source files</text>
-  <text x="280" y="912" fill="#475569" font-size="10">371 tests (0.3s)</text>
-  <text x="460" y="912" fill="#475569" font-size="10">Python ≥3.12</text>
-  <text x="620" y="912" fill="#475569" font-size="10">Pydantic v2 (frozen)</text>
-  <text x="810" y="912" fill="#475569" font-size="10">httpx async</text>
-  <text x="950" y="912" fill="#475569" font-size="10">MIT License</text>
+  <rect x="60" y="935" width="980" height="1" fill="#334155"/>
+  <text x="100" y="952" fill="#475569" font-size="10">31 source files</text>
+  <text x="280" y="952" fill="#475569" font-size="10">371 tests (0.3s)</text>
+  <text x="460" y="952" fill="#475569" font-size="10">Python ≥3.12</text>
+  <text x="620" y="952" fill="#475569" font-size="10">Pydantic v2 (frozen)</text>
+  <text x="810" y="952" fill="#475569" font-size="10">httpx async</text>
+  <text x="950" y="952" fill="#475569" font-size="10">MIT License</text>
 </svg>
