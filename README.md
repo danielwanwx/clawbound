@@ -30,30 +30,30 @@ User Message
   │
   ▼
 ┌─────────────────┐     Policy derivation from TaskSpec
-│  PolicyEngine    │──→  RuntimePolicy { budget, tools, iterations, scope }
+│  PolicyEngine   │──→  RuntimePolicy { budget, tools, iterations, scope }
 └─────────────────┘
   │
   ▼
 ┌─────────────────┐     Budget-aware segment admission + rendering
-│  PromptBuilder   │──→  PromptEnvelope { system_prompt, segments[], stats }
+│  PromptBuilder  │──→  PromptEnvelope { system_prompt, segments[], stats }
 └─────────────────┘
   │
   ▼
 ┌─────────────────┐     Async model interaction loop
-│  ExecutionLoop   │──→  LoopResult { content, tool_results, signals, events }
-│  ├─ ActionGate   │     (gate → broker → signal per tool call)
-│  ├─ ToolBroker   │
-│  └─ SignalProc   │
+│  ExecutionLoop  │──→  LoopResult { content, tool_results, signals, events }
+│  ├─ ActionGate  │     (gate → broker → signal per tool call)
+│  ├─ ToolBroker  │
+│  └─ SignalProc  │
 └─────────────────┘
   │
   ▼
 ┌─────────────────┐     Multi-turn memory with deterministic compaction
-│  SessionStore    │──→  SessionSnapshot { turns, bounds, compacted_summary }
+│  SessionStore   │──→  SessionSnapshot { turns, bounds, compacted_summary }
 └─────────────────┘
   │
   ▼
 ┌─────────────────┐
-│  EngineResponse  │──→  { content, run_id, diagnostics, duration_ms }
+│  EngineResponse │──→  { content, run_id, diagnostics, duration_ms }
 └─────────────────┘
 ```
 
